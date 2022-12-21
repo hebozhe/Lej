@@ -1,0 +1,11 @@
+{
+    "editor.formatOnSave": true,
+    "python.defaultInterpreterPath": "/home/hebozhe/Dropbox/DevProjects/PyProjects/Lej/lej_venv/bin/python3.11",
+    "python.linting.enabled": true,
+    "python.analysis.typeCheckingMode": "strict",
+    "python.linting.pylintEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.formatting.provider": "autopep8",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.importFormat": "relative"
+}
