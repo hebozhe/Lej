@@ -14,7 +14,9 @@ Lej (pronounced as "ledge") is a statically typed programming language being dev
 - **A person with two fingers should be able to code in it.** Decent text-to-speech software should output a sentence that a decent encoder can render into Lej syntax.
 
 ## Lej Syntax
-
+Lej is meant to read very closely to natural language, but not so much that it's inaccessible to coders. I have so far reached this balancing act.
+### Comments
+Comments are enclosed in backticks `` ` ``. They can go anywhere. Backticks are meaningless elsewhere in the language.
 ### Type Declaration
 These types are declared by their names, alone: `val` (value, as in "truth-value") and `int` (integer), `rat` (rational number), `str` (string) and `text` (text).
 
@@ -65,6 +67,27 @@ Where `X` and `Y` refer to the type of the expressions...
 
 Note: If these relational symbols are ever used for other types, their behavior will be unambiguous.
 
+### Containers
+#### Explicit Key-Value Containers
+Containers where keys must be explicit include `map`, and `dict`. Square brackets `[` and `]` denote their scopes. The comma `,` separates items in a given container. If the items of a container are a key-value pair, they are space-separated. The keys of these containers must be immutable
+
+Here are some example map assignments:
+`def map[str int] alphaOrder as ['A' 1, 'B' 2, 'C' 3];`
+`def map[str dict[int str]] alphaOrderLower as ['A' [1 'a'], 'B' [2 'b'], 'C' [3 'c']];`
+
+#### Implicit Key-Value Containers
+Containers where keys should not be declared include `tup` and `list`. Following the examples above should clarify the differences in the rules:
+`def tup[str] alphaTuple as ['A', 'B', 'C'];`
+`def list[int] orderList as [1, 2, 3];`
+
+#### Strings and Text
+Strings and text, according to Lej semantics, are tuples and lists of character primitives, respectively.
+Only single quotes denote them. The single-quote character "'" is offset with a backslash `\`.
+
+So, these examples follow from the above ones:
+`def str alphaString as 'ABC';`
+`def text alphaText as 'ABC';`
+
 ### Functions (WIP)
 #### Creating Functions
 The syntactic shell of every new function is:
@@ -86,6 +109,39 @@ Function calls work by replacing the expression to be resolved in an assignment 
 `def <TYPE> <ID> as what <FUNC-ID> with <TYPE-(EXPR|ID)>, <TYPE-(EXPR|ID)>, ... gives;`
 - A `with <TYPE-(EXPR|ID)>, ...` corresponds to what the function `take` wants as parameters. It can be omitted if there is no `take` statement in the called function.
 
+### Control Flow (WIP)
+#### Conditionals
+Because the semantics of Lej are intuitionistic instead of classical/Boolean, a simple `if-else` dynamic will be inadequate for it. Instead, Lej follows a pattern of `if-else-otherwise` model. This is its syntactic shell:
+
+```
+if <VAL-EXPR>:
+  ...
+else:
+  ...
+otherwise:
+  ...
+```
+The `if` is entered when the `<VAL-EXPR>` evaluates to `T`; the `else` block is entered when it evaluates to `F`; and finally the `otherwise` block is entered when it evaluates to `U`. `else` and `otherwise` blocks are optional. However, if the `else` portion is omitted, then `otherwise` is entered upong either `F` or `U` evaluations of the `<VAL-EXPR>`.
+
+#### Loops
+For-loops and while-loops can be merged, so all three schemes are valid:
+```
+do what follows <INT-(ID|EXPR)> times:
+  ...
+  again!
+```
+```
+do what follows until <VAL-(EXPR|ID)>:
+  ...
+  again!
+```
+```
+do what follows <INT-(ID|EXPR)> times or until <VAL-(EXPR|ID)>:
+  ...
+  again!
+```
+`again!` commands are required enclose loops. Additionally, the `back!` command corresponds to the `continue` keyword in most programming languages, and the `out!` command corresponds to the `break` statement in most programming languages.
+
 ## Lej Semantics
 ### Primitives
 - The truth-value primitives `T`, `U`, and `F` in the Go interpreter are signed 8-bit integers from 0 to 2.
@@ -103,3 +159,7 @@ The following composite type hierarchy holds:
         - (1.3.1) A `list` is a `dict` with ordered `int` keys.
             - (1.3.1.1) A `text` (text) is a `list` with character values.
 
+## Production Schedule
+My current production schedule involves integrating all of the core syntax and semantics.
+
+If you'd like to see what's in the pipeline for implementation, feel free to visit the Examples folder and see analogous Python and Go programs to the Lej ones. They're currently being used so that my coding assistant (ChatGPT) will have specific examples to guide its recommendations and code generation.
