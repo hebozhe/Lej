@@ -31,6 +31,7 @@ They are all as follows:
 
 ### Variable Assignment
 All variable assignments follow the following format:
+
 `def <TYPE> <ID> as <TYPE-EXPR>;`
 Once assigned, it cannot be reassigned via this syntax.
 `_` is being reserved for operator consideration. For the time being, onlyStrictCamelCasingWithNumbers is a legal for `<ID>` strings.
@@ -72,12 +73,16 @@ Note: If these relational symbols are ever used for other types, their behavior 
 Containers where keys must be explicit include `map`, and `dict`. Square brackets `[` and `]` denote their scopes. The comma `,` separates items in a given container. If the items of a container are a key-value pair, they are space-separated. The keys of these containers must be immutable
 
 Here are some example map assignments:
+
 `def map[str int] alphaOrder as ['A' 1, 'B' 2, 'C' 3];`
+
 `def map[str dict[int str]] alphaOrderLower as ['A' [1 'a'], 'B' [2 'b'], 'C' [3 'c']];`
 
 #### Implicit Key-Value Containers
 Containers where keys should not be declared include `tup` and `list`. Following the examples above should clarify the differences in the rules:
+
 `def tup[str] alphaTuple as ['A', 'B', 'C'];`
+
 `def list[int] orderList as [1, 2, 3];`
 
 #### Strings and Text
@@ -85,7 +90,9 @@ Strings and text, according to Lej semantics, are tuples and lists of character 
 Only single quotes denote them. The single-quote character "'" is offset with a backslash `\`.
 
 So, these examples follow from the above ones:
+
 `def str alphaString as 'ABC';`
+
 `def text alphaText as 'ABC';`
 
 ### Functions (WIP)
