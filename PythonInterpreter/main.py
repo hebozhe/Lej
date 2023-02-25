@@ -2,13 +2,14 @@
 This is where Lej's lexer, parser, and evaluator all come together.
 '''
 import os
-from lexer import tokenize
-from parser_ import parse
-from evaluator import walk_tree
+from lex import tokenize
+from parse import parse
+from evaluate import walk_tree
 from node import Node
 
 PATH_HERE: str = '/'.join(os.path.abspath(__file__).split('/')[:-2])
 print(PATH_HERE)
+
 
 def count_nodes(of_tree: Node | None) -> int:
     '''
@@ -21,8 +22,10 @@ def count_nodes(of_tree: Node | None) -> int:
 
 if __name__ == '__main__':
     test_path: str = f'{PATH_HERE}/Examples/valAssignments.lej'
-    lej_tokens: list[Node] = tokenize(this_path=test_path)
-    print(lej_tokens)
-    lej_tree = parse(lej_tokens)
+    with open(test_path, mode='r', encoding='UTF-8') as test_file:
+        test_prgrm: str = test_file.read()
+    test_tokens: list[Node] = tokenize(lej_pgrm=test_prgrm)
+    print(test_tokens)
+    lej_tree = parse(lej_tokens=test_tokens)
     # print(count_nodes(of_tree=lej_tree))
     walk_tree(lej_tree)

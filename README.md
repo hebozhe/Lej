@@ -1,172 +1,172 @@
 # Lej
 ## A Semantically Intuitionistic, Syntactically Intuitive Language
+
 **Disclaimer:** This is a work in progress, not a usable release. What follows are implementation plans and syntactic coverage. Examples and parallel programs in Go and Python will be added to the [Examples](https://github.com/hebozhe/Lej/tree/main/Examples) folder, and the language will be updated accordingly.
 
-## Synopsis
 
+## Synopsis
 Lej (pronounced as "ledge") is a statically typed programming language being developed under these maxims, in loose order of priority:
-- **A programmer gets the best of both classical and intuitionistic worlds.** `val` types work totally normally if you have only `T` and `F` values. `U` (unsure) values behave reliably intuitionistically for `and`, `or`, and `not` operations. 
-- **A sixth-grader should be able to understand the notation.**  That means no more wonky operator combinations like `>=` or `!=`, nor a `*` that does five different things. A single symbol does a single thing; or, at worst case, for a single type. Assignments and reassignments read more like natural-language sentences. Dealing with integer arithmetic? `=` means "equals", `^` means "to the power of".
-- **The map is the King of the Containers.** Anything that's not a primitive is a map of something. A `dict` is a mutable `map`. A `list` is a `dict` with integer keys and renumbering in the background.
-    - **Caveat: No floats.** A `rat` is a `map` with "n" (numerator) and "d" (denominator) keys and `int` values. Precision is guaranteed under division. No `float` type.
-    - **Caveat: No `None`, `nil`, `null`, `nix`, `nada`.**
-- **The type scheme is absolute.** Every type is constructed from base types.
-- **A person with two fingers should be able to code in it.** Decent text-to-speech software should output a sentence that a decent encoder can render into Lej syntax.
+- **Access both classical and intuitionistic worlds.** `brou` (Brouwerian) types work totally normally if you have only `T` (true) and `F` (false) values. `U` (unsure) values behave reliably intuitionistically for `and`, `or`, and `not` operations.
+- **The syntax of the green layman, not the seasoned coder, prevails.**  There is no wonky operator `>=` or `!=`, nor is there a `*` that does five different things. A single symbol does a single thing, for a single type. A sixth-grader should be able to follow the arithmetic.
+- **Key-value pairs constitute the entire container ontology.**  Immutable or not, a `key` unlocks a `value`, regardless of the container type.
+- **If something can't be constructed, it shan't be named.**  No `None`, `nil`, `null`, `nix`, `nada`. `undefined` is an error, not a type.
+- **Guarantee precision.** A `rat` is a `map` with "num" (numerator) and "den" (denominator) keys and `int` values. No `float` type.
+- **Get it done with two fingers or fewer.** The language is meant to read much like natural language to keep it intuitive and to enable speech-to-text software to encode natural verbal instructions into Lej.
+
+
+## Lej Semantics and Type Declaration
+Lej is meant to read very closely to natural language, but not so much that it's inaccessible to coders. I have so far reached this balancing act:
+
+
+### The Type System and Type Declaration
+As can be inferred from the maxims above, every type that's not primitive is a key-value container.
+
+These are the only semantic primitives of Lej:
+- `int` (***integers***: optionally, `int8`, `int16`, `int32`, `int64`; `int` assumes `int64`),
+- `chr` (UTF-8 ***characters***), and
+- `T`, `U`, and `F`  (Brouwerian ***truth-values***: the `int8` values 2, 1, and 0)
+- `fun` (***functions***)
+- `gen` (***generators***)
+
+`int`, `fun`, and `gen` can be declared. Brouwerian truth-values and `chr` cannot.
+
+Every other type is a key-value pairing.
+
+These key-value types are declared by their names, alone, because both the keys and values are predetermined:
+- `brou` (***Brouwerians***: `int` keys and `T`, `U`, or `F` values),
+- `rat` (***rationals***: `str` keys `'num'` and `'den'`, the numerators and denominators, respectively, and `int` values),
+denominators of their respective exponents, and `int` values.
+- `str` (***strings***: `int` keys and `chr` values),
+- `text` (***texts***: `int` keys and `chr` values)
+
+The remaining key-value pairings are underdetermined, and so space-separated types in adjoining brackets `[...]` are needed to specify the types of their values, or of their keys and values.
+
+Some keys are *inferred*, meaning they are restricted to just one type. Thus, only the type(s) of their values need to be specified. For the rest, both must be.
+
+Keys inferred:
+  - `tup[<VAL-TYPE>]`  (`int` keys and values of any type)
+  - `list[<VAL-TYPE>]`  (`int` keys and values of any type)
+  - `block[<VAL-TYPE>, ...]`  (`str` keys and a comma-separated, ordered listing of the types for every block attribute)
+  - `class[<VAL-TYPE>, ...]`  (`str` keys and a comma-separated, ordered listing of the types for every block attribute)
+
+Keys not inferred:
+  - `map[<KEY-TYPE> <VAL-TYPE>]`  (`int`, `chr`, `str`, `tup`, `block`, and ` keys, and keys can be of any legally defined type.)
+  - `dict[<KEY-TYPE> <VAL-TYPE>]` (Keys can be of `str`, `int` or `brou` types, and keys can be of any legally defined type.)
+
+
+All keys must be immutable, and the immutable (`IMM`) types are `int`, `chr`, `T`, `U`, `F`, `str`, `tup[<IMM-VAL-TYPE>]`, and `block[<IMM-VAL-TYPE>, ...]`.
+
 
 ## Lej Syntax
-Lej is meant to read very closely to natural language, but not so much that it's inaccessible to coders. I have so far reached this balancing act.
+
+
 ### Comments
-Comments are enclosed in backticks `` ` ``. They can go anywhere. Backticks are meaningless elsewhere in the language.
-### Type Declaration
-These types are declared by their names, alone: `val` (value, as in "truth-value") and `int` (integer), `rat` (rational number), `str` (string) and `text` (text).
+Comments are enclosed in backticks `` ` ``. They have no effect on the program, itself, and they can be placed anywhere, so long as their deletion at runtime preserves the syntactic legality of the Lej program.
 
-Composite types are declared by their names, and space-separated types indicating the pairs (or singles, if only one key type is permitted). This is much how type hinting works in Python.
-They are all as follows:
-- Keys not inferred:
-    - `map[<KEY-TYPE> <VALUE-TYPE>]`
-    - `dict[<KEY-TYPE> <VALUE-TYPE>]`
-- Keys inferred:
-    - `tup[<VALUE-TYPE>]`
-    - `list[<VALUE-TYPE>]`
 
-### Variable Assignment
-All variable assignments follow the following format:
+### Identifiers
+All `<ID>` tokens must be in camelCase, as defined by the regular expression `[a-z][0-9a-zA-Z]*`.
 
-`def <TYPE> <ID> as <TYPE-EXPR>;`
-Once assigned, it cannot be reassigned via this syntax.
-`_` is being reserved for operator consideration. For the time being, onlyStrictCamelCasingWithNumbers is a legal for `<ID>` strings.
-### Variable Reassignment
-`change <TYPE-ID> to <TYPE-EXPR>;`
-Type information is bound to `<ID>` and `<TYPE-EXPR>` nodes at parse time, rather than verified at runtime. Any other behavior is to be considered a bug and should be listed as an Issue.
-### Order-of-Operation-Scoped Expressions
-Parentheses `(` and `)` denote the order of operations and ***must be present*** for all binary sub-expressions. Unary operators (e.g., `not`, `-`) assume the subexpression immediately after it. The outermost parentheses of an expression may be omitted.
-#### Value Expressions
-- Primitive values `T` for true, `F` for false, and `U` for unsure. For more on how intuitionistic validity is captured via a mere ternary Kleene logic for the operators available to this language, feel free to read [my article](https://medium.com/@hebozhe/hacking-truth-tables-for-an-intuitionistic-semantics-on-programming-languages-logical-operators-dbbc46e313b4) outlining it.
-- Logical negation via `not <VAL-SUBEXPR>`,
-- Logical disjunction via `<VAL-SUBEXPR> or <VAL-SUBEXPR>`,
-- Logical conjunction via `<VAL-SUBEXPR> and <VAL-SUBEXPR>`.
+### Variable Assignment and Reassignment
+Every type declaration creates a `<TYPE>` node. Along with the `<ID>` node, via the following syntax:
 
-#### Arithmetic Expressions (WIP)
-- Decimal notation via `<INT-SUBEXPR>.<INT-SUBEXPR>`,
-    - These always create a `rat` type. There are no floats in Lej.
-- Addition via `<(INT|RAT)-SUBEXPR> + <(INT|RAT)-SUBEXPR>`,
-- Subtraction via `<(INT|RAT)-SUBEXPR> - <(INT|RAT)-SUBEXPR>`,
-- Multiplication via `<(INT|RAT)-SUBEXPR> * <(INT|RAT)-SUBEXPR>`,
-- Division via `<(INT|RAT)-SUBEXPR> / <(INT|RAT)-SUBEXPR>`,
-    - If the type declaration is `int`, it will evaluate to an `int` (strict division).
-    - If the type declaration is `rat`, it will evaluate to a `rat`, even if the denominator is 1.
-- Exponentiation `<(INT|RAT)-SUBEXPR> ^ <(INT|RAT)-SUBEXPR>`,
+`def <X-TYPE> <ID> as <X-EXPR>;`
 
-Note: If these arithmetic symbols are ever used for other types, their behavior will be unambiguous.
+Once assigned, variables can be reassigned with the following syntax:
 
-#### Relational-Logical Expressions (WIP)
-Where `X` and `Y` refer to the type of the expressions...
-- Identity via `<X-SUBEXPR> = <X-SUBEXPR>`,
-- Comparatives via `<X-SUBEXPR> > <X-SUBEXPR>` and `<X-SUBEXPR> < <X-SUBEXPR>`,
-    - Negated comparisons normally done via `<X-SUBEXPR> != <X-SUBEXPR>` in other languages are instead accomplished with `not <VAL-SUPEXPR>`, since all comparisons in this categeory output value subexpressions.
-    - The same applies to `<=`, `>=`, `!=`, etc. For example, `<X-SUBEXPR> <= <X-SUBEXPR>` in other languages can instead be rendered `not (<X-SUBEXPR> > <X-SUBEXPR>)` or `(<X-SUBEXPR> < <X-SUBEXPR>) or (<Y-SUBEXPR> = <Y-SUBEXPR>)`.
+`change <ID> to <X-EXPR>;`
 
-Note: If these relational symbols are ever used for other types, their behavior will be unambiguous.
+Every variable must be assigned *exactly once* for the lifetime of its existence. Reassignent, however, is unlimited, so long as the type (here, `X`) continues to match.
 
-### Containers
-#### Explicit Key-Value Containers
-Containers where keys must be explicit include `map`, and `dict`. Square brackets `[` and `]` denote their scopes. The comma `,` separates items in a given container. If the items of a container are a key-value pair, they are space-separated. The keys of these containers must be immutable
 
-Here are some example map assignments:
+### Brouwerian Expressions
+Brouwerians under the hood are of the type `list[int8]` where the `int8` values 2, 1, and 0 correspond to `T`, `U`, and `F`. `T` and `F` values have only one item, called the head. `U` values consist of a head and a tail corresponding to a unique Boolean truth-table column, which is decided when the program is lexed.
 
-`def map[str int] alphaOrder as ['A' 1, 'B' 2, 'C' 3];`
+The following expressions work for every `brou` type:
+- Negation: `not <BROU-SUBEXPR|ID>`,
+- Conjunction: `<BROU-SUBEXPR|ID> and <BROU-SUBEXPR|ID>`, and
+- Disjunction: `<BROU-SUBEXPR|ID> or <BROU-SUBEXPR|ID>`.
 
-`def map[str dict[int str]] alphaOrderLower as ['A' [1 'a'], 'B' [2 'b'], 'C' [3 'c']];`
+These expressions can be nested to produce more complex expressions, though they must be enclosed in parentheses when binary operators are used. There is no left- or right-associativity in Lej's parsing procedure.
 
-#### Implicit Key-Value Containers
-Containers where keys should not be declared include `tup` and `list`. Following the examples above should clarify the differences in the rules:
+For instance, the following classical and intuitionistic theorems can be expressed, where `X` and `Y` refer to truth-values or Brouwerian variables, as follows:
+- LNC: `not (<BROU-X> and not <BROU-X>)`,
+- LEM: `<BROU-X> or not <BROU-X>`
+- Double negation introduction: `not not not <BROU-X> or <BROU-X>`,
+- Peirce's law: `not (not (not <BROU-X> or <BROU-Y>) or <BROU-X>) or <BROU-X>`.
 
-`def tup[str] alphaTuple as ['A', 'B', 'C'];`
+Of these theorems, if `<BROU-X>` and `<BROU-Y>` both evaluate to `U`, only the LNC evaluates to `T` intuitionistically. The remainder evaluate to `U`, even though all of the tail's truth-values evaluate to `T`. A separate evaluation phase converts `U` Brouwerian heads to `F` and removes their tails.
 
-`def list[int] orderList as [1, 2, 3];`
 
-#### Strings and Text
-Strings and text, according to Lej semantics, are tuples and lists of character primitives, respectively.
-Only single quotes denote them. The single-quote character "'" is offset with a backslash `\`.
+### Numeracy and Arithmetic Expressions
+> God made the integers, all else is the work of man.
 
-So, these examples follow from the above ones:
+While `int` primitives are simply a collection of digits, `rat` types are `map[str int]` types with only the keys `'num'` for their numerators and `'den'` for their denominators.
 
-`def str alphaString as 'ABC';`
+The following expressions work for both `int` and `rat` types and evaluate to `int` or `rat` types:
+- Addition: `<INT|RAT-SUBEXPR> + <INT|RAT-SUBEXPR>`,
+- Subtraction: `<INT|RAT-SUBEXPR> - <INT|RAT-SUBEXPR>`,
+- Negatives: `-<INT|RAT-SUBEXPR>` (equivalent to subtraction from 0),
+- Multiplication: `<INT|RAT-SUBEXPR> * <INT|RAT-SUBEXPR>`,
+- Division: `<INT|RAT-SUBEXPR> / <INT|RAT-SUBEXPR>`,
+- Modulus: `<INT|RAT-SUBEXPR> % <INT|RAT-SUBEXPR>`, and
 
-`def text alphaText as 'ABC';`
+`rat` types are not stores. Every `rat` value simplifies in its evaluation. For example, `(1 / 2) + (3 / 2)` evaluates to `2/1`, not `4/2`.
 
-### Functions (WIP)
-#### Creating Functions
-The syntactic shell of every new function is:
-```
-def <ID> as follows:
-  take <TYPE> <ID>, <TYPE> <ID>;
-  expect <X>;
-  ...
-  give <X-(EXPR|ID)>;
-```
-The indentation is optional. Only a single space is required to separate blocks and "lines" of code. Lej can be minified.
-- A `take` statement is optional. You place your parameters here.
-- An `expect` statement is required. It declares the expected return type of the function.
-- A `give` statement is required.
-- The `expect` and `give` types (marked `X` above) must match.
+The following expressions work for both `int` and `rat` types and evaluate to `brou` types:
+- Equality: `<INT|RAT-SUBEXPR> = <INT|RAT-SUBEXPR>`,
+- Greater-Than: `<INT|RAT-SUBEXPR> > <INT|RAT-SUBEXPR>`, and
+- Less-Than: `<INT|RAT-SUBEXPR> > <INT|RAT-SUBEXPR>`.
 
-#### Calling Functions
-Function calls work by replacing the expression to be resolved in an assignment or reassignment statement as follows:
-`def <TYPE> <ID> as what <FUNC-ID> with <TYPE-(EXPR|ID)>, <TYPE-(EXPR|ID)>, ... gives;`
-- A `with <TYPE-(EXPR|ID)>, ...` corresponds to what the function `take` wants as parameters. It can be omitted if there is no `take` statement in the called function.
 
-### Control Flow (WIP)
-#### Conditionals
-Because the semantics of Lej are intuitionistic instead of classical/Boolean, a simple `if-else` dynamic will be inadequate for it. Instead, Lej follows a pattern of `if-else-otherwise` model. This is its syntactic shell:
+Note that the evaluations for `=`, `>`, and `<` only work with `int` and `rat` types. Lej provides other means for comparing other types.
 
-```
-if <VAL-EXPR>:
-  ...
-else:
-  ...
-otherwise:
-  ...
-```
-The `if` is entered when the `<VAL-EXPR>` evaluates to `T`; the `else` block is entered when it evaluates to `F`; and finally the `otherwise` block is entered when it evaluates to `U`. `else` and `otherwise` blocks are optional. However, if the `else` portion is omitted, then `otherwise` is entered upong either `F` or `U` evaluations of the `<VAL-EXPR>`.
+The following expressions only work with `int` types:
+- Decimalization: `<INT-SUBEXPR>.<INT-SUBEXPR>`.
 
-#### Loops
-For-loops and while-loops can be merged, so all three schemes are valid:
-```
-do what follows <INT-(ID|EXPR)> times:
-  ...
-  again!
-```
-```
-do what follows until <VAL-(EXPR|ID)>:
-  ...
-  again!
-```
-```
-do what follows <INT-(ID|EXPR)> times or until <VAL-(EXPR|ID)>:
-  ...
-  again!
-```
-`again!` commands are required enclose loops. Additionally, the `back!` command corresponds to the `continue` keyword in most programming languages, and the `out!` command corresponds to the `break` statement in most programming languages.
+For example, the expression `1.2 * 3.4` evaluates as follows:
+- `1.2 * 3.4` to `(12/10) * (34/10)`, to `(6/5) * (17/5)`, to `102/25`.
 
-## Lej Semantics
-### Primitives
-- The truth-value primitives `T`, `U`, and `F` in the Go interpreter are signed 8-bit integers from 0 to 2.
-- All integer (`int`-type) literals in the Go interpreter are signed 64-bit integers.
-- There are character primitives for `str` and `text`.
+There are no `float` types in Lej. `2/3` is not equal to `0.333333333333333`, and it never will be.
 
-### Composites
-Here, I'm using "mutable" to mean "not frozen". "Immutable" types are frozen. They can only be reassigned with entire expressions, but their internal values cannot be.
-The following composite type hierarchy holds:
-- (1) A `map` is an immutable base container type with key-value pairs.
-    - (1.1) A `tup` (tuple) is a `map` with ordered `int` keys.
-        - (1.1.1) A `str` (string) is a `tup` with character values.
-    - (1.2) A `rat` (rational number) is a `map` with two character keys -- "n" and "d" -- and `int` values for both. "n" represents the numerator, and "d" represents the denominator.
-    - (1.3). A `dict` (dictionary) is a mutable `map`.
-        - (1.3.1) A `list` is a `dict` with ordered `int` keys.
-            - (1.3.1.1) A `text` (text) is a `list` with character values.
+There is no order of operations nor left- or right-associativity in Lej. An expression like `1 + 2 * 3` is ill-formed in Lej. `(1 + 2) * 3` and `1 + (2 * 3)` are well-formed.
 
-## Production Schedule
-My current production schedule involves integrating all of the core syntax and semantics.
+Finally, `int` and `rat` types to not implicitly convert, as shown in these examples.
+- `def int divInt as 3/2;` throws an error.
+- `def rat divRat as 2/2;` assigns `1/1` to `divRat`.
+- `def int decInt as 1.2;` throws an error.
 
-If you'd like to see what's in the pipeline for implementation, feel free to visit the Examples folder and see analogous Python and Go programs to the Lej ones. They're currently being used so that my coding assistant (ChatGPT) will have specific examples to guide its recommendations and code generation.
+### Container Expressions
+Key-value pairs explain the entire ontology of Lej containers. A key-value pair is a call to a unique, immutable value, called
+the *key*, to fetch a stored *value*. The exact permissions for these key-value types are covered in this table:
+
+| CONTAINER TYPE | MUTABLE? | ALLOWED KEYS   | ALLOWED VALUES | IMPLICIT KEYS | TYPE MIXING IN KEYS?   | TYPE MIXING IN VALUES? |
+| -------------- | -------- | -------------- | -------------- | ------------- | ---------------------- | ---------------------- |
+| `map`          | No       | All Immutables | All*           | No            | No                     | No                     |
+| `dict`         | Yes      | All Immutables | All*           | No            | No                     | No                     |
+| `tup`          | No       | `int`          | All*           | Yes           | No                     | No                     |
+| `list`         | Yes      | `int`          | All*           | Yes           | No                     | No                     |
+| `str`          | No       | `int`          | `chr`          | Yes           | No                     | No                     |
+| `text`         | Yes      | `int`          | `chr`          | Yes           | No                     | No                     |
+| `block`        | No       | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
+| `class`        | Yes      | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
+\* Except for `fun` and `gen` types.
+
+All containers' individual values are all fetched the same way:
+
+- `<CONTAINER-ID>[<CONTAINER'S-KEY>]`
+
+`tup`, `list`, `str`, and `text` types, because they are implicitly ordered, allow for slicing:
+
+- `<(TUP|LIST|STR|TEXT)-ID>[int int]`
+
+Mutable containers can:
+- Add key-value pairs,
+- Remove key-value pairs, and
+- Change values from keys.
+
+Immutable containers cannot.  "Immutable" therefore is closer to "frozen" in meaning.
+
+The phrase "All Immutables" above refers to `int`, `str`, `tup`, and `block` types. `map` types, themselves, cannot be keys.
+
+Container key types cannot ever be changed or mixed within a container. It is perfectly static.

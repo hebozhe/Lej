@@ -1,8 +1,6 @@
 '''
 This module defines and updates the Node struct/object.
 '''
-from typing import Self
-
 ###############################################################################
 # Nodes (Terminals and Nonterminals)
 ###############################################################################
@@ -10,51 +8,92 @@ from typing import Self
 
 class Node:
     '''
-    summary: Define a Node
+    summary: Define Nodes to cover all use needs.
     '''
-
-    def __init__(self, name: str, start: int, end: int, scope: str,
-                 action: str, terminal: bool, literal: str,
-                 children: tuple[int, int], left: Self | None,
-                 right: Self | None):
-        self.name = name
-        self.start = start
-        self.end = end
-        self.scope = scope
-        self.action = action
-        self.terminal = terminal
-        self.literal = literal
-        self.children = children
-        self.left = left
-        self.right = right
+    # Both terminals and nonterminals:
+    name: str
+    start: int
+    end: int
+    is_terminal: bool
+    scope: str
+    # Terminals only:
+    literal: str
+    u_count: int  # Only for 'U' Brouwerians.
+    # Nonterminals only:
+    left: 'Node'
+    right: 'Node'
 
 
-def build_new_term(name: str, start: int, end: int, scope: str,
-                   action: str, literal: str) -> Node:
+def build_base_node(name: str, start: int, end: int, scope: str) -> Node:
     '''
-    summary: Builds and returns a new terminal Node.
+    summary: Build a fresh node given the descriptors.
+
+    params:
+    name: str indicating the name of the node.
+    start: int indicating which position in the Lej code begins the node.
+    end: int indicating which position in the Lej node ends the node.
+
+    return: Node with the base attributes.
     '''
-    return Node(name, start, end, scope, action, True, literal,
-                tuple(), None, None)
+    base_node: Node = Node()
+    base_node.name = name
+    base_node.start = start
+    base_node.end = end
+    base_node.scope = scope
+    return base_node
 
 
-# Builds a new nonterminal Node.
-def build_new_nonterm(name: str, start: int, end: int,
-                      scope: str, action: str, children: tuple[int, int],
-                      match_span: list[Node]) -> Node:
+EmptyNode: Node = Node()
+
+
+def make_terminal(the_node: Node, literal: str) -> Node:
     '''
-    summary: Builds and returns a new nonterminal Node.
+    summary: Add data that only applies to terminal nodes.
+
+    params:
+    node: Node to be asserted as terminal.
+    literal: str indicating the literal characters that comprise the terminal.
+
+    return: Node of node with the extra terminal attributes.
     '''
-    left = right = None
-    # Leave left and right undefined until a long enough match_span arises.
-    if len(match_span) < children[1] + 1:
-        left = right = None
-    else:
-        if children[0] == children[1]:
-            left = match_span[children[0]]
-            right = None
-        else:
-            left = match_span[children[0]]
-            right = match_span[children[1]]
-    return Node(name, start, end, scope, action, False, '',
-                children, left, right)
+    the_node.is_terminal = True
+    the_node.literal = literal
+    return the_node
+
+
+def make_nonterminal(the_node: Node) -> Node:
+    '''
+    summary: Add data that only applies to nonterminal nodes.
+
+    params:
+    node: Node to be asserted as nonterminal.
+
+    return: Node of node with the extra nonterminal attributes.
+    '''
+    the_node.is_terminal = False
+    return the_node
+
+
+def child(the_node: Node, context: list[Node]) -> Node:
+    '''
+    summary: Give left and right children to nonterminal Node classes
+        with the children attribute defined (via make_terminal()).
+
+    params:
+    node: Node to be given left and right children.
+    context: list[Node] from which the children are to be extracted.
+
+    return: Node of node with the children.
+    '''
+    assert not the_node.is_terminal, \
+        f'The node of name {the_node.name} is terminal, thus childless.'
+    children: list[Node] = \
+        [n for n in context if n.name[0] == '<' and n.name[-1] == '>']
+    assert 0 < len(children) < 3, \
+        f'The context {[n.name for n in context]} has {children} child nodes, '\
+        'when it should have just 1 or 2.'
+    the_node.left = children[0]
+    if len(children) == 1:
+        return the_node
+    the_node.right = children[-1]
+    return the_node
