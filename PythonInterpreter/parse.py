@@ -262,14 +262,14 @@ def parse(lej_tokens: list[Node]) -> Node:
     '''
     priority_grammar: dict[str, dict[tuple[str, ...], str]] = prioritize(grammar=GRAMMAR_MAP)
     while priority_grammar:
-        _, grammar = priority_grammar.popitem()
+        priority, grammar = priority_grammar.popitem()
         len_bef: int = 0
         len_aft: int = -1
         while len_aft < len_bef:
             len_bef = len(lej_tokens)
             lej_tokens = parse_rec(lej_tokens=lej_tokens, grammar=grammar)
             len_aft = len(lej_tokens)
-        # print(priority, '->', [n.name for n in lej_tokens])
+        print(priority, '->', [n.name for n in lej_tokens])
     if len(lej_tokens) > 1:
         print('This Lej program could not be parsed.')
         # print(set(GRAMMAR_MAP.values()))

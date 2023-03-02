@@ -25,7 +25,7 @@ if __name__ == '__main__':
     with open(test_path, mode='r', encoding='UTF-8') as test_file:
         test_prgrm: str = test_file.read()
     test_tokens: list[Node] = tokenize(lej_pgrm=test_prgrm)
-    print(test_tokens)
+    print([t.name for t in test_tokens])
     lej_tree = parse(lej_tokens=test_tokens)
-    # print(count_nodes(of_tree=lej_tree))
+    print(count_nodes(of_tree=lej_tree))
     walk_tree(lej_tree)

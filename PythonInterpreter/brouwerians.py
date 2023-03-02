@@ -63,8 +63,10 @@ def double_brou_tail(brou: Brou) -> Brou:
 
     return: Brou with the doubly long tail.
     '''
-    brou.val = brou.val + brou.val[1:]
-    return brou
+    brou_a: Brou = Brou()
+    brou_a.u_count = 0
+    brou_a.val = brou.val + brou.val[1:]
+    return brou_a
 
 
 def halve_brou_tail(brou: Brou) -> Brou:
@@ -82,6 +84,7 @@ def halve_brou_tail(brou: Brou) -> Brou:
     midpt: int = (len(brou.val) + 1) // 2
     while brou.val[1:midpt] == brou.val[midpt:]:
         brou.val = brou.val[:midpt]
+        midpt: int = (len(brou.val) + 1) // 2
     return brou
 
 
@@ -294,7 +297,7 @@ def eval_brou_tree(tree: Node) -> Brou:
     if tree.name == '<OR-EXPR>' or tree.name == '<OR-SUBEXPR>':
         brou_a: Brou = eval_brou_tree(tree=tree.left)
         brou_b: Brou = eval_brou_tree(tree=tree.right)
-        return eval_and(brou_a=brou_a, brou_b=brou_b)
+        return eval_or(brou_a=brou_a, brou_b=brou_b)
     if tree.name == '<NOT-EXPR>' or tree.name == '<NOT-SUBEXPR>':
         brou_a: Brou = eval_brou_tree(tree=tree.left)
         return eval_not(brou_a=brou_a)

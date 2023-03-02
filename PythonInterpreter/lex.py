@@ -132,7 +132,7 @@ TERMINALS_MAP: dict[str, list[str]] = {
     '<BROU-SUBEXPR>':
     [
         # Primitive truth-values:
-        'T', 'U', 'F'
+        'T', 'U', 'F',
     ],
     # Single-character symbols:
     'SYMBOLS':

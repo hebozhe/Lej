@@ -1,0 +1,66 @@
+def brou isTrue as T;
+def brou isAlsoTrue as T;
+def brou isUnsure as U;
+def brou isAlsoUnsure as U;
+def brou isFalse as F;
+def brou isAlsoFalse as F;
+
+`Classical Operations`
+def brou isOrClassical as isTrue or isTrue;
+change isOrClassical to isTrue or isFalse;
+change isOrClassical to isFalse or isTrue;
+change isOrClassical to isFalse or isFalse;
+
+def brou isAndClassical as isTrue and isTrue;
+change isAndClassical to isTrue and isFalse;
+change isAndClassical to isFalse and isTrue;
+change isAndClassical to isFalse and isFalse;
+
+def brou isNotClassical as not isTrue;
+change isNotClassical to not isNotClassical;
+
+`Intuitionistic Operations`
+def brou isOrIntuitionistic as isTrue or isUnsure;
+change isOrIntuitionistic to isUnsure or isTrue;
+change isOrIntuitionistic to isUnsure or isUnsure;
+change isOrIntuitionistic to isUnsure or isFalse;
+change isOrIntuitionistic to isFalse or isUnsure;
+
+change isOrIntuitionistic to isUnsure or isAlsoUnsure;
+
+def brou isAndIntuitionistic as isTrue and isUnsure;
+change isAndIntuitionistic to isUnsure and isTrue;
+change isAndIntuitionistic to isUnsure and isUnsure;
+change isAndIntuitionistic to isUnsure and isFalse;
+change isAndIntuitionistic to isFalse and isUnsure;
+
+change isAndIntuitionistic to isUnsure and isAlsoUnsure;
+
+def brou isNotIntuitionistic as not isUnsure;
+
+`Classical LEM`
+def brou isLEMClassical as isTrue or not isTrue;
+change isLEMClassical to isFalse or not isFalse;
+
+`Intuitionistic LEM`
+def brou isLEMIntuitionistic as isUnsure or not isUnsure;
+change isLEMIntuitionistic to not isUnsure or not not isUnsure;
+
+`Classical LNC`
+def brou isLNCClassical as not (isTrue and not isTrue);
+change isLNCClassical to not (isFalse and not isFalse);
+
+`Intuitionistic LNC`
+def brou isLNCIntuitionistic as not (isUnsure and not isUnsure);
+
+`Classical Peirce's Law`
+def brou isPeircesLawClassical as not (not (not isTrue or isTrue) or isTrue) or isTrue;
+change isPeircesLawClassical to not (not (not isTrue or isFalse) or isTrue) or isTrue;
+change isPeircesLawClassical to not (not (not isFalse or isTrue) or isFalse) or isFalse;
+change isPeircesLawClassical to not (not (not isFalse or isFalse) or isFalse) or isFalse;
+
+`Intuitionistic Peirce's Law`
+def brou isPeircesLawIntuitionistic as not (not (not isUnsure or isUnsure) or isUnsure) or isUnsure;
+change isPeircesLawIntuitionistic to not (not (not isUnsure or isAlsoUnsure) or isUnsure) or isUnsure;
+change isPeircesLawIntuitionistic to not (not (not isAlsoUnsure or isUnsure) or isAlsoUnsure) or isAlsoUnsure;
+change isPeircesLawIntuitionistic to not (not (not isAlsoUnsure or isAlsoUnsure) or isAlsoUnsure) or isAlsoUnsure;
