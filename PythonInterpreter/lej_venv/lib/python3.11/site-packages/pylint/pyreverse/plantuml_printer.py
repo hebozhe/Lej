@@ -24,6 +24,7 @@ class PlantUmlPrinter(Printer):
         EdgeType.INHERITS: "--|>",
         EdgeType.IMPLEMENTS: "..|>",
         EdgeType.ASSOCIATION: "--*",
+        EdgeType.AGGREGATION: "--o",
         EdgeType.USES: "-->",
     }
 
@@ -39,7 +40,8 @@ class PlantUmlPrinter(Printer):
                 self.emit("top to bottom direction")
             else:
                 raise ValueError(
-                    f"Unsupported layout {self.layout}. PlantUmlPrinter only supports left to right and top to bottom layout."
+                    f"Unsupported layout {self.layout}. PlantUmlPrinter only "
+                    "supports left to right and top to bottom layout."
                 )
 
     def emit_node(
@@ -66,7 +68,8 @@ class PlantUmlPrinter(Printer):
         if properties.methods:
             for func in properties.methods:
                 args = self._get_method_arguments(func)
-                line = f"{func.name}({', '.join(args)})"
+                line = "{abstract}" if func.is_abstract() else ""
+                line += f"{func.name}({', '.join(args)})"
                 if func.returns:
                     line += " -> " + get_annotation_label(func.returns)
                 body.append(line)

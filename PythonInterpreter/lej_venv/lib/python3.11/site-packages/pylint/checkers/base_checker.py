@@ -7,7 +7,7 @@ from __future__ import annotations
 import abc
 import functools
 import warnings
-from collections.abc import Iterator
+from collections.abc import Iterable, Sequence
 from inspect import cleandoc
 from tokenize import TokenInfo
 from typing import TYPE_CHECKING, Any
@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 
 @functools.total_ordering
 class BaseChecker(_ArgumentsProvider):
-
     # checker name (you may reuse an existing one)
     name: str = ""
     # ordered list of options to control the checker behaviour
@@ -54,6 +53,7 @@ class BaseChecker(_ArgumentsProvider):
                 "longer supported. Child classes should only inherit BaseChecker or any "
                 "of the other checker types from pylint.checkers.",
                 DeprecationWarning,
+                stacklevel=2,
             )
         if self.name is not None:
             self.name = self.name.lower()
@@ -105,8 +105,8 @@ class BaseChecker(_ArgumentsProvider):
     def get_full_documentation(
         self,
         msgs: dict[str, MessageDefinitionTuple],
-        options: Iterator[tuple[str, OptionDict, Any]],
-        reports: tuple[tuple[str, str, ReportsCallable], ...],
+        options: Iterable[tuple[str, OptionDict, Any]],
+        reports: Sequence[tuple[str, str, ReportsCallable]],
         doc: str | None = None,
         module: str | None = None,
         show_options: bool = True,
@@ -235,6 +235,12 @@ class BaseChecker(_ArgumentsProvider):
         ]
 
     def get_message_definition(self, msgid: str) -> MessageDefinition:
+        # TODO: 3.0: Remove deprecated method
+        warnings.warn(
+            "'get_message_definition' is deprecated and will be removed in 3.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         for message_definition in self.messages:
             if message_definition.msgid == msgid:
                 return message_definition

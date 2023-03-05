@@ -114,6 +114,9 @@ GRAMMAR_MAP: dict[tuple[str, ...], str] = \
     build_rules(parent_name='<ADD-EXPR>',
                 pools=[NAMED_POOLS[':INT-EVALUABLE:'] + NAMED_POOLS[':RAT-EVALUABLE:'], ['+'], NAMED_POOLS[':INT-EVALUABLE:'] + NAMED_POOLS[':RAT-EVALUABLE:'],]
                 ) | \
+    build_rules(parent_name='<ADD-EXPR>',
+                pools=[NAMED_POOLS[':INT-EVALUABLE:'] + NAMED_POOLS[':RAT-EVALUABLE:'], ['<NEG-SUBEXPR>'],]
+                ) | \
     build_rules(parent_name='<ADD-SUBEXPR>',
                 pools=[['('], NAMED_POOLS[':INT-EVALUABLE:'] + NAMED_POOLS[':RAT-EVALUABLE:'], ['+'], NAMED_POOLS[':INT-EVALUABLE:'] + NAMED_POOLS[':RAT-EVALUABLE:'], [')'],]
                 ) | \

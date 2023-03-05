@@ -9,10 +9,10 @@ from astroid import nodes
 
 from pylint import checkers
 from pylint.checkers import utils
+from pylint.interfaces import HIGH, INFERENCE
 
 
 class RecommendationChecker(checkers.BaseChecker):
-
     name = "refactoring"
     msgs = {
         "C0200": (
@@ -67,7 +67,7 @@ class RecommendationChecker(checkers.BaseChecker):
         self._py36_plus = py_version >= (3, 6)
 
     @staticmethod
-    def _is_builtin(node, function):
+    def _is_builtin(node: nodes.NodeNG, function: str) -> bool:
         inferred = utils.safe_infer(node)
         if not inferred:
             return False
@@ -85,6 +85,10 @@ class RecommendationChecker(checkers.BaseChecker):
             return
         if node.func.attrname != "keys":
             return
+
+        if isinstance(node.parent, nodes.BinOp) and node.parent.op in {"&", "|", "^"}:
+            return
+
         comp_ancestor = utils.get_node_first_ancestor_of_type(node, nodes.Compare)
         if (
             isinstance(node.parent, (nodes.For, nodes.Comprehension))
@@ -101,7 +105,9 @@ class RecommendationChecker(checkers.BaseChecker):
                 inferred.bound, nodes.Dict
             ):
                 return
-            self.add_message("consider-iterating-dictionary", node=node)
+            self.add_message(
+                "consider-iterating-dictionary", node=node, confidence=INFERENCE
+            )
 
     def _check_use_maxsplit_arg(self, node: nodes.Call) -> None:
         """Add message when accessing first or last elements of a str.split() or
@@ -113,6 +119,11 @@ class RecommendationChecker(checkers.BaseChecker):
             isinstance(node.func, nodes.Attribute)
             and node.func.attrname in {"split", "rsplit"}
             and isinstance(utils.safe_infer(node.func), astroid.BoundMethod)
+        ):
+            return
+        inferred_expr = utils.safe_infer(node.func.expr)
+        if isinstance(inferred_expr, astroid.Instance) and any(
+            inferred_expr.nodes_of_class(nodes.ClassDef)
         ):
             return
 
@@ -326,9 +337,16 @@ class RecommendationChecker(checkers.BaseChecker):
     def _check_use_sequence_for_iteration(
         self, node: nodes.For | nodes.Comprehension
     ) -> None:
-        """Check if code iterates over an in-place defined set."""
-        if isinstance(node.iter, nodes.Set):
-            self.add_message("use-sequence-for-iteration", node=node.iter)
+        """Check if code iterates over an in-place defined set.
+
+        Sets using `*` are not considered in-place.
+        """
+        if isinstance(node.iter, nodes.Set) and not any(
+            utils.has_starred_node_recursive(node)
+        ):
+            self.add_message(
+                "use-sequence-for-iteration", node=node.iter, confidence=HIGH
+            )
 
     @utils.only_required_for_messages("consider-using-f-string")
     def visit_const(self, node: nodes.Const) -> None:

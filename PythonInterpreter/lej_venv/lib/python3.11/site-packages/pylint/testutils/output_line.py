@@ -90,6 +90,7 @@ class OutputLine(NamedTuple):
         if isinstance(row, str):
             row = row.split(",")
         # noinspection PyBroadException
+        # pylint: disable = too-many-try-statements
         try:
             column = cls._get_column(row[2])
             if len(row) == 5:
@@ -98,6 +99,7 @@ class OutputLine(NamedTuple):
                     "expected confidence level, expected end_line and expected end_column. "
                     "An OutputLine should thus have a length of 8.",
                     DeprecationWarning,
+                    stacklevel=2,
                 )
                 return cls(
                     row[0],
@@ -115,6 +117,7 @@ class OutputLine(NamedTuple):
                     "expected end_line and expected end_column. An OutputLine should thus have "
                     "a length of 8.",
                     DeprecationWarning,
+                    stacklevel=2,
                 )
                 return cls(
                     row[0], int(row[1]), column, None, None, row[3], row[4], row[5]

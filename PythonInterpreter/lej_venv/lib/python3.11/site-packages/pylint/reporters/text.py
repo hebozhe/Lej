@@ -135,6 +135,7 @@ def colorize_ansi(
         warnings.warn(
             "In pylint 3.0, the colorize_ansi function of Text reporters will only accept a MessageStyle parameter",
             DeprecationWarning,
+            stacklevel=2,
         )
         color = kwargs.get("color")
         style_attrs = tuple(_splitstrip(style))
@@ -147,6 +148,10 @@ def colorize_ansi(
     if escape_code:
         return f"{escape_code}{msg}{ANSI_RESET}"
     return msg
+
+
+def make_header(msg: Message) -> str:
+    return f"************* Module {msg.module}"
 
 
 class TextReporter(BaseReporter):
@@ -175,7 +180,7 @@ class TextReporter(BaseReporter):
         self._template = template
 
         # Check to see if all parameters in the template are attributes of the Message
-        arguments = re.findall(r"\{(.+?)(:.*)?\}", template)
+        arguments = re.findall(r"\{(\w+?)(:.*)?\}", template)
         for argument in arguments:
             if argument[0] not in MESSAGE_FIELDS:
                 warnings.warn(
@@ -198,17 +203,26 @@ class TextReporter(BaseReporter):
     def handle_message(self, msg: Message) -> None:
         """Manage message of different type and in the context of path."""
         if msg.module not in self._modules:
-            if msg.module:
-                self.writeln(f"************* Module {msg.module}")
-                self._modules.add(msg.module)
-            else:
-                self.writeln("************* ")
+            self.writeln(make_header(msg))
+            self._modules.add(msg.module)
         self.write_message(msg)
 
     def _display(self, layout: Section) -> None:
         """Launch layouts display."""
         print(file=self.out)
         TextWriter().format(layout, self.out)
+
+
+class NoHeaderReporter(TextReporter):
+    """Reports messages and layouts in plain text without a module header."""
+
+    name = "no-header"
+
+    def handle_message(self, msg: Message) -> None:
+        """Write message(s) without module header."""
+        if msg.module not in self._modules:
+            self._modules.add(msg.module)
+        self.write_message(msg)
 
 
 class ParseableTextReporter(TextReporter):
@@ -225,6 +239,7 @@ class ParseableTextReporter(TextReporter):
         warnings.warn(
             f"{self.name} output format is deprecated. This is equivalent to --msg-template={self.line_format}",
             DeprecationWarning,
+            stacklevel=2,
         )
         super().__init__(output)
 
@@ -265,6 +280,7 @@ class ColorizedTextReporter(TextReporter):
             warnings.warn(
                 "In pylint 3.0, the ColorizedTextReporter will only accept ColorMappingDict as color_mapping parameter",
                 DeprecationWarning,
+                stacklevel=2,
             )
             temp_color_mapping: ColorMappingDict = {}
             for key, value in color_mapping.items():
@@ -293,10 +309,7 @@ class ColorizedTextReporter(TextReporter):
         """
         if msg.module not in self._modules:
             msg_style = self._get_decoration("S")
-            if msg.module:
-                modsep = colorize_ansi(f"************* Module {msg.module}", msg_style)
-            else:
-                modsep = colorize_ansi(f"************* {msg.module}", msg_style)
+            modsep = colorize_ansi(make_header(msg), msg_style)
             self.writeln(modsep)
             self._modules.add(msg.module)
         msg_style = self._get_decoration(msg.C)
@@ -310,6 +323,7 @@ class ColorizedTextReporter(TextReporter):
 
 def register(linter: PyLinter) -> None:
     linter.register_reporter(TextReporter)
+    linter.register_reporter(NoHeaderReporter)
     linter.register_reporter(ParseableTextReporter)
     linter.register_reporter(VSTextReporter)
     linter.register_reporter(ColorizedTextReporter)

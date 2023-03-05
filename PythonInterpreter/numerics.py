@@ -267,7 +267,7 @@ def eval_mul(number_a: Number, number_b: Number) -> Number:
         rat_a: Rat = conv_int_to_rat(int_=number_a)
         rat_b: Rat = standardize_rat(rat=number_b)
         rat_c: Rat = Rat()
-        rat_c.num = rat_a.num * rat_a.num
+        rat_c.num = rat_a.num * rat_b.num
         rat_c.den = rat_a.den * rat_b.den
         return simplify_rat(rat=rat_c)
     # Evaluate "Rat * int" expression.
@@ -275,7 +275,7 @@ def eval_mul(number_a: Number, number_b: Number) -> Number:
         rat_a: Rat = standardize_rat(rat=number_a)
         rat_b: Rat = conv_int_to_rat(int_=number_b)
         rat_c: Rat = Rat()
-        rat_c.num = rat_a.num * rat_a.num
+        rat_c.num = rat_a.num * rat_b.num
         rat_c.den = rat_a.den * rat_b.den
         return simplify_rat(rat=rat_c)
     # Evaluate "Rat * Rat" expression.
@@ -283,7 +283,7 @@ def eval_mul(number_a: Number, number_b: Number) -> Number:
         rat_a: Rat = standardize_rat(rat=number_a)
         rat_b: Rat = standardize_rat(rat=number_b)
         rat_c: Rat = Rat()
-        rat_c.num = rat_a.num * rat_a.num
+        rat_c.num = rat_a.num * rat_b.num
         rat_c.den = rat_a.den * rat_b.den
         return simplify_rat(rat=rat_c)
     print(f'The formula of "{type(number_a)} * {type(number_b)}" has not been implemented.')
@@ -371,44 +371,53 @@ def eval_mod(number_a: Number, number_b: Number) -> Number:
 
     return: Number of the modulo, simplified and standardized.
     '''
-    # Evaluate "int / int" expression.
+    # Evaluate "int % int" expression.
     if isinstance(number_a, int) and isinstance(number_b, int):
-        return number_a - (number_a // number_b)
-    # Evaluate "int / Rat" expression.
+        return number_a - (number_b * (number_a // number_b))
+    # Evaluate "int % Rat" expression.
     if isinstance(number_a, int) and isinstance(number_b, Rat):
         rat_a: Rat = conv_int_to_rat(int_=number_a)
         rat_b: Rat = number_b
         number_c: Number = eval_div(number_a=rat_a, number_b=rat_b)
         if isinstance(number_c, Rat):
-            rat_c: Rat = standardize_rat(rat=number_c)
-            quo_c: int = rat_c.num // rat_c.den
-            prod_c: Number = eval_mul(number_a=rat_c, number_b=quo_c)
-            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_c)
+            int_quo: int = number_c.num // number_c.den
+            prod_d: Number = eval_mul(number_a=rat_b, number_b=int_quo)
+            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_d)
             return rem_c
-    # Evaluate "Rat / int" expression.
+    # Evaluate "Rat % int" expression.
     if isinstance(number_a, Rat) and isinstance(number_b, int):
         rat_a: Rat = number_a
         rat_b: Rat = conv_int_to_rat(int_=number_b)
         number_c: Number = eval_div(number_a=rat_a, number_b=rat_b)
         if isinstance(number_c, Rat):
-            rat_c: Rat = standardize_rat(rat=number_c)
-            quo_c: int = rat_c.num // rat_c.den
-            prod_c: Number = eval_mul(number_a=rat_c, number_b=quo_c)
-            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_c)
+            int_quo: int = number_c.num // number_c.den
+            prod_d: Number = eval_mul(number_a=rat_b, number_b=int_quo)
+            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_d)
             return rem_c
-    # Evaluate "Rat / Rat" expression.
+    # Evaluate "Rat % Rat" expression.
     if isinstance(number_a, Rat) and isinstance(number_b, Rat):
         rat_a: Rat = number_a
         rat_b: Rat = number_b
         number_c: Number = eval_div(number_a=rat_a, number_b=rat_b)
         if isinstance(number_c, Rat):
-            rat_c: Rat = standardize_rat(rat=number_c)
-            quo_c: int = rat_c.num // rat_c.den
-            prod_c: Number = eval_mul(number_a=rat_c, number_b=quo_c)
-            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_c)
+            int_quo: int = number_c.num // number_c.den
+            prod_d: Number = eval_mul(number_a=rat_b, number_b=int_quo)
+            rem_c: Number = eval_sub(number_a=rat_a, number_b=prod_d)
             return rem_c
     print(f'The formula of "{type(number_a)} / {type(number_b)}" has not been implemented.')
     exit(1)
+
+
+def eval_neg(number_a: Number) -> Number:
+    '''
+    summary: Evaluate the negative of a number.
+
+    params:
+    number_a: Number of the left operand of an <NEG-SUBEXPR>.
+
+    return: Number of the negative, simplified and standardized.
+    '''
+    return eval_sub(number_a=0, number_b=number_a)
 
 
 def eval_arit_tree(tree: Node) -> Number:
@@ -449,10 +458,14 @@ def eval_arit_tree(tree: Node) -> Number:
     if tree.name == '<DEC-EXPR>' or tree.name == '<DEC-SUBEXPR>':
         number_a: Number = eval_arit_tree(tree=tree.left)
         number_b: Number = eval_arit_tree(tree=tree.right)
-        return eval_div(number_a=number_a, number_b=number_b)
+        if isinstance(number_a, int) and isinstance(number_b, int):
+            return eval_dec(int_a=number_a, int_b=number_b)
     if tree.name == '<MOD-EXPR>' or tree.name == '<MOD-SUBEXPR>':
         number_a: Number = eval_arit_tree(tree=tree.left)
         number_b: Number = eval_arit_tree(tree=tree.right)
         return eval_mod(number_a=number_a, number_b=number_b)
+    if tree.name == '<NEG-SUBEXPR>':
+        number_a: Number = eval_arit_tree(tree=tree.left)
+        return eval_neg(number_a=number_a)
     print(f'This {tree.name} could not be evaluated.')
     exit(1)

@@ -296,9 +296,6 @@ class SpecialMethodsChecker(BaseChecker):
 
     @staticmethod
     def _is_iterator(node: InferenceResult) -> bool:
-        if node is astroid.Uninferable:
-            # Just ignore Uninferable objects.
-            return True
         if isinstance(node, bases.Generator):
             # Generators can be iterated.
             return True
@@ -394,7 +391,6 @@ class SpecialMethodsChecker(BaseChecker):
                 (inferred.elts[0], self._is_tuple),
                 (inferred.elts[1], self._is_dict),
             ):
-
                 if isinstance(arg, nodes.Call):
                     arg = safe_infer(arg)
 

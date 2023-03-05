@@ -120,72 +120,56 @@ def walk_tree(lej_tree: Node) -> int:
 if __name__ == '__main__':
     sample_program: str = \
         '''
-        def brou isTrue as T;
-        def brou isAlsoTrue as T;
-        def brou isUnsure as U;
-        def brou isAlsoUnsure as U;
-        def brou isFalse as F;
-        def brou isAlsoFalse as F;
+        def int int3 as 3;
+        def int int5 as 5;
+        def int int7 as 7;
+        def int int9 as 9;
 
-        `Classical Operations`
-        def brou isOrClassical as isTrue or isTrue;
-        change isOrClassical to isTrue or isFalse;
-        change isOrClassical to isFalse or isTrue;
-        change isOrClassical to isFalse or isFalse;
+        `Integer Addition`
+        def int intSum1 as 3 + 5;
+        def int intSum2 as 7 + 9;
+
+        `Integer Subtraction`
+        def int intDiff1 as intSum1 - 3; `Expect 5.`
+        def int intDiff2 as intSum2 - 5; `Expect 11.`
+
+        `Integer Multiplication`
+        def int intProd1 as intDiff1 * intDiff2; `Expect 55.`
+        def int intProd2 as (intSum1 * 9) * 2; `Expect 144.`
+
+        `Integer Division`
+        def int intQuot1 as 9 / 3; `Expect 3.`
+        def rat intQuot2 as intProd1 / intSum1; `Expect 55/8.`
+
+        `Integer Modulus`
+        def int intMod1 as 9 % 5; `Expect 4.`
+        def int intMod2 as intSum2 % (intDiff2 % 3); `Expect 0.`
+
+        `Rational Addition`
+        def rat ratSum1 as (intSum1 / intSum2) + (3 / 9); `Expect 5/6.`
+        def rat ratSum2 as ratSum1 + (ratSum1 + 5); `Expect 20/3.`
+
+        `Rational Subtraction`
+        def rat ratDiff1 as (1 / 3) - (intSum1 / intSum2); `Expect -1/6.`
+        def rat ratDiff2 as (-5 / -10) - (intProd2 - (1 / 2)); `Expect -143/1.`
+
+        `Rational Multiplication`
+        def rat ratProd1 as ratDiff1 * ratDiff2; `Expect 143/6.`
+        def rat ratProd2 as ratProd1 * 12; `Expect 286/1.`
         
-        def brou isAndClassical as isTrue and isTrue;
-        change isAndClassical to isTrue and isFalse;
-        change isAndClassical to isFalse and isTrue;
-        change isAndClassical to isFalse and isFalse;
+        `Rational Division`
+        def rat ratQuot1 as ratDiff1 / ratSum1; `Expect -1/5.`
+        def rat ratQuot2 as (ratSum2 / ratSum1) / intProd1; `Expect 8/55.`
+        def int intQuot3 as ratSum2 / ratSum2; `Expect 1.`
 
-        def brou isNotClassical as not isTrue;
-        change isNotClassical to not isNotClassical;
+        `Rational Modulus`
+        def rat ratMod1 as ratSum2 % ratSum1; `Expect 0/1.`
+        def rat ratMod2 as intProd2 % ratDiff1; `Expect 0/1.`
+        def rat ratMod3 as intQuot2 % 3; `Expect... 7/8.`
 
-        `Intuitionistic Operations`
-        def brou isOrIntuitionistic as isTrue or isUnsure;
-        change isOrIntuitionistic to isUnsure or isTrue;
-        change isOrIntuitionistic to isUnsure or isUnsure;
-        change isOrIntuitionistic to isUnsure or isFalse;
-        change isOrIntuitionistic to isFalse or isUnsure;
-
-        change isOrIntuitionistic to isUnsure or isAlsoUnsure;
-
-        def brou isAndIntuitionistic as isTrue and isUnsure;
-        change isAndIntuitionistic to isUnsure and isTrue;
-        change isAndIntuitionistic to isUnsure and isUnsure;
-        change isAndIntuitionistic to isUnsure and isFalse;
-        change isAndIntuitionistic to isFalse and isUnsure;
-
-        change isAndIntuitionistic to isUnsure and isAlsoUnsure;
-
-        def brou isNotIntuitionistic as not isUnsure;
-
-        `Classical LEM`
-        def brou isLEMClassical as isTrue or not isTrue;
-        change isLEMClassical to isFalse or not isFalse;
-
-        `Intuitionistic LEM`
-        def brou isLEMIntuitionistic as isUnsure or not isUnsure;
-        change isLEMIntuitionistic to not isUnsure or not not isUnsure;
-
-        `Classical LNC`
-        def brou isLNCClassical as not (isTrue and not isTrue);
-        change isLNCClassical to not (isFalse and not isFalse);
-
-        `Intuitionistic LNC`
-        def brou isLNCIntuitionistic as not (isUnsure and not isUnsure);
-
-        `Classical Peirce's Law`
-        def brou isPeircesLawClassical as not (not (not isTrue or isTrue) or isTrue) or isTrue;
-        change isPeircesLawClassical to not (not (not isTrue or isFalse) or isTrue) or isTrue;
-        change isPeircesLawClassical to not (not (not isFalse or isTrue) or isFalse) or isFalse;
-        change isPeircesLawClassical to not (not (not isFalse or isFalse) or isFalse) or isFalse;
-
-        `Intuitionistic Peirce's Law`
-        def brou isPeircesLawIntuitionistic as not (not (not isUnsure or isUnsure) or isUnsure) or isUnsure;
-        change isPeircesLawIntuitionistic to not (not (not isUnsure or isAlsoUnsure) or isUnsure) or isUnsure;
-        change isPeircesLawIntuitionistic to not (not (not isAlsoUnsure or isUnsure) or isAlsoUnsure) or isAlsoUnsure;
-        change isPeircesLawIntuitionistic to not (not (not isAlsoUnsure or isAlsoUnsure) or isAlsoUnsure) or isAlsoUnsure;
+        `Rational Decimalization`
+        def rat ratDec1 as 15.15; `Expect 303/20.`
+        def rat ratDec2 as 3.1415926; `Expect 15707963/5000000.`
         '''
     sample_tokens: list[Node] = tokenize(lej_pgrm=sample_program)
     sample_tree: Node = parse(lej_tokens=sample_tokens)

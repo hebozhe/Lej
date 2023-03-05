@@ -9,13 +9,13 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, List, cast
+from typing import TYPE_CHECKING
 
 import astroid
 from astroid import nodes
 
 from pylint.checkers import BaseChecker
-from pylint.checkers.utils import only_required_for_messages
+from pylint.checkers.utils import is_enum, only_required_for_messages
 from pylint.typing import MessageDefinitionTuple
 
 if TYPE_CHECKING:
@@ -175,7 +175,7 @@ def _is_exempt_from_public_methods(node: astroid.ClassDef) -> bool:
 
     # If it's a typing.Namedtuple, typing.TypedDict or an Enum
     for ancestor in node.ancestors():
-        if ancestor.name == "Enum" and ancestor.root().name == "enum":
+        if is_enum(ancestor):
             return True
         if ancestor.qname() in (TYPING_NAMEDTUPLE, TYPING_TYPEDDICT):
             return True
@@ -245,7 +245,7 @@ def _get_parents_iter(
     ``{A, B, C, D}`` -- both ``E`` and its ancestors are excluded.
     """
     parents: set[nodes.ClassDef] = set()
-    to_explore = cast(List[nodes.ClassDef], list(node.ancestors(recurs=False)))
+    to_explore = list(node.ancestors(recurs=False))
     while to_explore:
         parent = to_explore.pop()
         if parent.qname() in ignored_parents:
