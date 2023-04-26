@@ -1,34 +1,95 @@
-# Lej
-## A Semantically Intuitionistic, Syntactically Intuitive Language
+# **Lej**: A Semantically Intuitionistic, Syntactically Intuitive Language
 
-**Disclaimer:** This is a work in progress, not a usable release. What follows are implementation plans and syntactic coverage. Examples and parallel programs in Go and Python will be added to the [Examples](https://github.com/hebozhe/Lej/tree/main/Examples) folder, and the language will be updated accordingly.
+**Disclaimer:** This is a work in progress, not a usable release. What follows are implementation plans and syntactic coverage. Examples and parallel programs in Go will be added to the [Examples](https://github.com/hebozhe/Lej/tree/main/Examples) folder, and the language will be updated accordingly. The older Python interpreter for Lej has been scrapped, but will recommence once Codon or mypy are sufficiently rich to cover the needed types.
+
+## **Overview**
+---
+Lej (pronounced as "ledge") is a statically typed programming language that aims to provide a simple and intuitive syntax while allowing access to both classical and intuitionistic worlds. It is being developed under these maxims, in loose order of priority:
+
+- **Access both classical and intuitionistic worlds.** Brouwerian types work normally if you have only `T` (true) and `F` (false) values. `U` (unsure) values behave reliably intuitionistically for `and`, `or`, and `not` operations.
+- **Simple and intuitive syntax.** The syntax is designed to be easy to read and write for beginners and seasoned developers alike. A single symbol does a single thing, for a single type. 
+- **Key-value pairs for containers.** Key-value pairs constitute the entire container ontology, whether they are immutable or not. A `key` unlocks a `value`, regardless of the container type.
+- **Avoid undefined or null types.** Lej does not have a type for `None`, `nil`, `null`, `nix`, `nada`. `undefined` is an error, not a type.
+- **Precision guaranteed.** A `rat` is a `map` with "num" (numerator) and "den" (denominator) keys and `int` values. There is no `float` type in Lej.
+- **Intuitive and efficient.** The language is meant to be easy to read and write, using a syntax similar to natural language. This enables speech-to-text software to encode natural verbal instructions into Lej with ease.
+---
+
+## **Documentation**
+### Basic Syntax
+[**Comments**](#comments)
+1. **Primitive Symbols**
+    - [**Whitespaces**](#whitespaces)
+    - [**Arithmetic Operators**](#arithmetic-operators)
 
 
-## Synopsis
-Lej (pronounced as "ledge") is a statically typed programming language being developed under these maxims, in loose order of priority:
-- **Access both classical and intuitionistic worlds.** `brou` (Brouwerian) types work totally normally if you have only `T` (true) and `F` (false) values. `U` (unsure) values behave reliably intuitionistically for `and`, `or`, and `not` operations.
-- **The syntax of the green layman, not the seasoned coder, prevails.**  There is no wonky operator `>=` or `!=`, nor is there a `*` that does five different things. A single symbol does a single thing, for a single type. A sixth-grader should be able to follow the arithmetic.
-- **Key-value pairs constitute the entire container ontology.**  Immutable or not, a `key` unlocks a `value`, regardless of the container type.
-- **If something can't be constructed, it shan't be named.**  No `None`, `nil`, `null`, `nix`, `nada`. `undefined` is an error, not a type.
-- **Guarantee precision.** A `rat` is a `map` with "num" (numerator) and "den" (denominator) keys and `int` values. No `float` type.
-- **Get it done with two fingers or fewer.** The language is meant to read much like natural language to keep it intuitive and to enable speech-to-text software to encode natural verbal instructions into Lej.
+## **The Complete EBNF Grammar of Lej**
+---
+```
+
+```
+---
 
 
-## Lej Semantics and Type Declaration
-Lej is meant to read very closely to natural language, but not so much that it's inaccessible to coders. I have so far reached this balancing act:
+## **Comments**
+---
+There are only multiline comments in Lej. They are initialized and terminated with unescaped "`" characters. They can go anywhere, as they are skipped at lexing and parsing.
+
+Example:
+```
+def nat zero as 0; `Assigns the natural number 0 to the name "zero".`
+change zero `which was defined above
+             and continues onto this line` to -1 + 1;
+```
+---
+
+## **Whitespaces**
+---
+Spaces, tabs, and line breaks are all legitimate spacing options.
+Spacing is only meaningful in the separation of lexemes in the language. They make no difference to the validity of the syntax.
+
+Obviously, you should use your best judgment when it comes to formatting, but Lej does not impose such rules on it. Lej, therefore, can also be minified.
+
+Example:
+```
+from showing use showing;
 
 
-### The Type System and Type Declaration
-As can be inferred from the maxims above, every type that's not primitive is a key-value container.
+def brou               spacedOkay as               T;
+if spacedOkay:  
+def brou didPrintToTerminal
+as what showing with "Conditional caught!" gives;
+else:  def brou didPrintToTerminal as F; otherwise: def brou didPrintToTerminal as U;
+```
+---
 
+## **Arithmetic Operators**
+---
+Arithmetic operators connnect numeric types to produce other numeric types:
+- `+` for addition,
+- `-` for subtraction,
+- `*` for multiplication,
+- `/` for division,
+- `%` for modulo,
+- `.` for decimalization.
+
+
+Example:
+```
+def nat sumOfFirstTwoPrimes as 2 + 3;
+```
+---
+
+
+
+---
 These are the only semantic primitives of Lej:
+- `nat` (***naturals***: optionally, `nat8`, `nat16`, `nat32`, `nat64`; `nat` assumes `nat64 `)
 - `int` (***integers***: optionally, `int8`, `int16`, `int32`, `int64`; `int` assumes `int64`),
-- `chr` (UTF-8 ***characters***), and
+  - The key difference between `nat` and `int` types is the same as the difference between unsigned and signed integers in other languages.
+- `chr` (UTF-8 ***characters***, which also work like Go's `rune` types), and
 - `T`, `U`, and `F`  (Brouwerian ***truth-values***: the `int8` values 2, 1, and 0)
 - `fun` (***functions***)
 - `gen` (***generators***)
-
-`int`, `fun`, and `gen` can be declared. Brouwerian truth-values and `chr` cannot.
 
 Every other type is a key-value pairing.
 
@@ -60,8 +121,6 @@ All keys must be immutable, and the immutable (`IMM`) types are `int`, `chr`, `T
 ## Lej Syntax
 
 
-### Comments
-Comments are enclosed in backticks `` ` ``. They have no effect on the program, itself, and they can be placed anywhere, so long as their deletion at runtime preserves the syntactic legality of the Lej program.
 
 
 ### Identifiers
@@ -116,7 +175,7 @@ The following expressions work for both `int` and `rat` types and evaluate to `i
 The following expressions work for both `int` and `rat` types and evaluate to `brou` types:
 - Equality: `<INT|RAT-SUBEXPR> = <INT|RAT-SUBEXPR>`,
 - Greater-Than: `<INT|RAT-SUBEXPR> > <INT|RAT-SUBEXPR>`, and
-- Less-Than: `<INT|RAT-SUBEXPR> > <INT|RAT-SUBEXPR>`.
+- Less-Than: `<INT|RAT-SUBEXPR> < <INT|RAT-SUBEXPR>`.
 
 
 Note that the evaluations for `=`, `>`, and `<` only work with `int` and `rat` types. Lej provides other means for comparing other types.
@@ -148,8 +207,8 @@ the *key*, to fetch a stored *value*. The exact permissions for these key-value 
 | `list`         | Yes      | `int`          | All*           | Yes           | No                     | No                     |
 | `str`          | No       | `int`          | `chr`          | Yes           | No                     | No                     |
 | `text`         | Yes      | `int`          | `chr`          | Yes           | No                     | No                     |
-| `block`        | No       | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
-| `class`        | Yes      | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
+| `rec`        | No       | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
+| `data`        | Yes      | `str`          | All*           | Yes           | No                     | Yes, Each Declared     |
 \* Except for `fun` and `gen` types.
 
 All containers' individual values are all fetched the same way:

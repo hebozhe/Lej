@@ -1,19 +1,17 @@
 package main
 
 import (
-	. "GoInterpreter/evaluator"
 	. "GoInterpreter/lexer"
 	. "GoInterpreter/node"
-	. "GoInterpreter/parser"
 	"fmt"
+	"os"
 )
 
 func main() {
-	var lejToks []*Node = Tokenize("../Examples/valAssignments.lej")
+	lejProg, err := os.ReadFile("../Examples/brouAssignments.lej")
+	if err != nil {
+		fmt.Printf("The file could not be read.\n")
+	}
+	var lejToks []Node = Lex(string(lejProg))
 	fmt.Printf("%v\n", lejToks)
-	var lejTree *Node = Parse(lejToks)
-	/* if lejJSONBytes, err := json.MarshalIndent(lejTree, "", "\t"); err == nil {
-		fmt.Println(string(lejJSONBytes))
-	} */
-	WalkTree(lejTree)
 }

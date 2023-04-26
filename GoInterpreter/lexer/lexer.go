@@ -1,122 +1,165 @@
-package parser
+package lexer
 
 import (
+	. "GoInterpreter/errors"
 	. "GoInterpreter/node"
-	"fmt"
-	"os"
 )
 
-///////////////////////////////////////////////////////////////////////////////
-// Mapping Terminal Nodes
-///////////////////////////////////////////////////////////////////////////////
-
-var TerminalsMap map[string]*Node = map[string]*Node{
-	// Assignment keywords:
-	"def": BuildNewTerm("DEF", 0, 0, "g", "", "def"),
-	"as":  BuildNewTerm("AS", 0, 0, "g", "", "as"),
-	// Identifiers are found separately.
-	// Logical literals:
-	"T": BuildNewTerm("VAL-SUBEXPR", 0, 0, "g", "buildTrue", "T"),
-	"U": BuildNewTerm("VAL-SUBEXPR", 0, 0, "g", "buildUnsure", "U"),
-	"F": BuildNewTerm("VAL-SUBEXPR", 0, 0, "g", "buildFalse", "F"),
-	// Logical operators:
-	"and": BuildNewTerm("AND", 0, 0, "g", "", "and"),
-	"or":  BuildNewTerm("OR", 0, 0, "g", "", "or"),
-	"not": BuildNewTerm("NOT", 0, 0, "g", "", "not"),
+func primValue(r rune) uint8 {
+	switch r {
+	// 0 means endchar, so check whether a token is an ID or keyword.
+	// 1 means primitive symbol, so check a token whether ID of keyword and also add the symbol.
+	// 2 means encloser, so continue the scan to the next identical encloser, and assign the str/text literal.
+	// 3 means comment tick, so continue the scan to the next identical encloser, and do nothing with it.
+	// 4 means it's not a primitive.
+	// Whitespaces:
+	case ' ', '\n', '\t':
+		return 0
+	// Arithmetic operators:
+	case '+', '-', '/', '.':
+		return 1
+	// Arithmetic evaluators:
+	case '=', '>', '<':
+		return 1
 	// Delimiters:
-	";": BuildNewTerm(";", 0, 0, "g", "", ";"),
-	"(": BuildNewTerm("(", 0, 0, "g", "", "("),
-	")": BuildNewTerm(")", 0, 0, "g", "", ")"),
-	// Type keywords:
-	"val": BuildNewTerm("VAL", 0, 0, "g", "", "val"),
+	case '[', ']', '(', ')':
+		return 1
+	// Line ends:
+	case ';', ':', '!':
+		return 1
+	// Strings:
+	case '\'':
+		return 2
+	// Comments
+	case '`':
+		return 3
+	default:
+		return 4
+	}
 }
 
-// Creates a new terminal ID Node.
-func BuildNewIDNode(start int, end int, scope string, literal string) *Node {
-	return BuildNewTerm("ID", start, end, scope, "", literal)
+var keywords map[string]string = map[string]string{
+	// Assignment keywords:
+	"def": "def", "as": "as",
+	// Reassignment keywords:
+	"redef": "redef",
+
+	// Type declarations:
+	"chr":  "chr",
+	"brou": "brou",
+	"nat":  "nat", "nat8": "nat8", "nat16": "nat16", "nat32": "nat32", "nat64": "nat64",
+	"int": "int", "int8": "int8", "int16": "int16", "int32": "int32", "int64": "int64",
+	"rat": "rat",
+	"map": "map", "dict": "dict",
+	"tup": "tup", "list": "list",
+	"str": "str", "text": "text",
+	"rec": "rec", "data": "data",
+	"fun": "fun",
+	"gen": "gen",
+
+	// Logical primitives:
+	"T": "<brouLit>", "U": "<brouLit>", "F": "<brouLit>",
+
+	// Logical operators:
+	"and": "and", "or": "or", "not": "not",
+
+	// "this":
+	"this": "this",
+
+	// Loop-specific keywords:
+	"do": "do", "times": "do", "until": "until",
+	"back": "back", "up": "up", "out": "out",
+
+	// Function keywords:
+	"take": "take", "expect": "expect", "give": "give",
+	"what": "what", "gives": "gives", "with": "with",
+
+	// Module importing:
+	"use": "use", "from": "from",
 }
 
-// Determines whether a given string qualifies as an ID literal.
-func canBeNewID(s string) bool {
-	if _, ok := TerminalsMap[s]; ok {
-		return false
-	}
-	if !('a' <= s[0] && s[0] <= 'z') {
-		return false
-	}
-	for _, c := range s {
-		if !(('a' <= c && c <= 'z') ||
-			('A' <= c && c <= 'Z') ||
-			('0' <= c && c <= '9')) {
-			return false
+// Outside of primitives, the only remaining characters are alphanumeric.
+// That means they're keywords, identifiers, or natural=number literals.
+func decideTerm(ofstr string, start int, end int) Node {
+	var firstChar rune = rune(ofstr[0])
+	if 'a' <= firstChar && firstChar <= 'z' { // It's a keyword or identifier
+		// Check for keyword status vs. identifier status.
+		val, ok := keywords[ofstr]
+		if ok { // It's a keyword.
+			return Term(val, end, ofstr)
 		}
+		for _, c := range ofstr { // Make sure the identifier is valid.
+			if !(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9')) {
+				ThrowError("Invalid Identifier", ofstr, start, end)
+			}
+		}
+		return Term("<id>", end, ofstr)
 	}
-	return true
+	if ofstr == "T" || ofstr == "U" || ofstr == "F" { // It's a Brouwerian literal.
+		val, _ := keywords[ofstr]
+		return Term(val, end, ofstr)
+	}
+	if '0' <= firstChar && firstChar <= '9' {
+		// Confirm it's an natural-number literal.
+		for _, c := range ofstr {
+			if !('0' <= c && c <= '9') {
+				ThrowError("Invalid Literal", ofstr, start, end)
+			}
+		}
+		return Term("<natLit>", end, ofstr)
+	}
+	// It's ill-formed.
+	ThrowError("Invalid Literal", ofstr, start, end)
+	return Node{} // Never gets reached. Only makes Go happy.
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Tokenizer
-///////////////////////////////////////////////////////////////////////////////
-
-func Tokenize(thisPath string) []*Node {
-	var tokenArr []*Node
-	lejFile, err := os.ReadFile(thisPath)
-	if err != nil {
-		panic(err)
+func Lex(input string) []Node {
+	var tok string = ""
+	var terms []Node = []Node{}
+	var holdoff int = -1
+	for i, c := range input {
+		if i < holdoff {
+			continue
+		}
+		switch primValue(c) {
+		case 4: // Just add c to tok.
+			tok += string(c)
+		case 3: // Capture the entire comment and discard it.
+			tok += string(c)
+			for _, sc := range input[i+1:] {
+				tok += string(sc)
+				if sc == c {
+					if tok[len(tok)-2] != '\\' {
+						break
+					}
+				}
+			}
+			holdoff = i + len(tok)
+			tok = ""
+		case 2: // Capture the entire str/text literal and create a terminal for it.
+			tok += string(c)
+			for _, sc := range input[i+1:] {
+				tok += string(sc)
+				if sc == c {
+					if tok[len(tok)-2] != '\\' {
+						break
+					}
+				}
+			}
+			terms = append(terms, Term("strTextLit", i, tok)) // The str/text literal.
+			tok = ""
+		case 1: // First, decide which terminal the token is; then, add the terminal.
+			if tok != "" {
+				terms = append(terms, decideTerm(tok, i-len(tok), i))
+			}
+			terms = append(terms, Term(string(c), i, string(c)))
+			tok = ""
+		case 0:
+			if tok != "" {
+				terms = append(terms, decideTerm(tok, i-len(tok), i))
+			}
+			tok = ""
+		}
 	}
-	var lejText string = string(lejFile) + " "
-	// fmt.Printf(lejText + "\n")
-	// var whitespaces [2]byte = [2]byte{' ', '\n'}
-	var i int = 0
-	var curScope string = "g"
-	for j := 1; j < len(lejText); j++ {
-		// Skip slice-leading whitespace characters.
-
-		for lejText[i] == ' ' || lejText[i] == '\n' {
-			i += 1
-			if i == j {
-				break
-			}
-		}
-		// Append identifiers in current chunk.
-		var curChunk string = lejText[i:j]
-		var nextChunk string = lejText[i : j+1]
-		// fmt.Printf("'%s' '%s'\n", curChunk, nextChunk)
-		// Skip empty chunks.
-		if curChunk == "" {
-			continue
-		}
-		// Check for new terminal ID nodes.
-		if canBeNewID(curChunk) {
-			// Skip if the next chunk can be an identifier, too.
-			if canBeNewID(nextChunk) {
-				continue
-			}
-			// Skip if the next chunk can be a primitive.
-			if _, ok := TerminalsMap[nextChunk]; ok {
-				continue
-			}
-			var idNode *Node = BuildNewIDNode(i, j, curScope, curChunk)
-			tokenArr = append(tokenArr, idNode)
-			// fmt.Printf("Added identifier: %s\n", idNode.Literal)
-			i = j
-			continue
-		}
-		// Append primitive terminal Nodes.
-		if tn, ok := TerminalsMap[curChunk]; ok {
-			// Skip if the next chunk can be an identifier.
-			if canBeNewID(nextChunk) {
-				continue
-			}
-			var nextTNode *Node = BuildNewTerm(tn.Name, i, j, curScope, tn.Action, curChunk)
-			tokenArr = append(tokenArr, nextTNode)
-			// fmt.Printf("Added primitive: %s\n", foundTNode.Name)
-			i = j
-			continue
-		}
-		// Panic, because the character is foreign.
-		fmt.Printf("This chunk could not be tokenized: %s\n", curChunk)
-		os.Exit(1)
-	}
-	return tokenArr
+	return terms
 }
