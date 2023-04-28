@@ -1,0 +1,20 @@
+def fun countCharFreq as this:
+    take str s;
+    expect dict[chr nat];
+    def dict[chr nat] frequencies as [];
+    def sLen as what len with [s] gives;
+    def nat i as sLen - 1;
+    def chr c as '';
+    def brou alreadyPresent as U;
+    do this sLen times:
+        redef c as s[i];
+        redef alreadyPresent as frequencies[c]?;
+        if alreadyPresent:
+            redef frequencies[c] as frequencies[c] + 1;
+            \
+        else:
+            def nat frequencies[c] as 1;
+            \
+        redef i as i - 1;
+        \
+    give frequencies;

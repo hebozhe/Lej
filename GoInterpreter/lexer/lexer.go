@@ -22,7 +22,7 @@ func primValue(r rune) uint8 {
 	case '=', '>', '<':
 		return 1
 	// Delimiters:
-	case '[', ']', '(', ')':
+	case '[', ']':
 		return 1
 	// Line ends:
 	case ';', ':', '!':
@@ -69,6 +69,9 @@ var keywords map[string]string = map[string]string{
 	// Loop-specific keywords:
 	"do": "do", "times": "do", "until": "until",
 	"back": "back", "up": "up", "out": "out",
+
+	// Conditional and loop block close symbol:
+	"\\": "\\",
 
 	// Function keywords:
 	"take": "take", "expect": "expect", "give": "give",
