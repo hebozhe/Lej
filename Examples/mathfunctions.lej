@@ -1,26 +1,26 @@
-def fun fib as this:
+def fun fib as:
     take nat n;
     expect nat;
     if n < 2:
         give n;
         \
-    give [what fib with [n - 2] gives] + [what fib with [n - 1] gives];
+    give fib[n - 2] + fib[n - 1];
 
-def fun factorial as this:
+def fun factorial as:
     take nat n;
     expect nat;
     if n < 2:
         give 1;
         \
-    give n * [what factorial with [n - 1] gives];
+    give n * factorial[n - 1];
 
-def fun smallestPowerOfTwo as this:
+def fun smallestPowerOfTwo as:
     take nat n;
     expect nat;
     def nat power as 1;
     def nat exponent as 0;
     do this until power > n - 1:
-        redef power as power * 2;
-        redef exponent as exponent + 1;
+        power as power * 2;
+        exponent as exponent + 1;
         \
     give power;

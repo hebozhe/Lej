@@ -1,13 +1,13 @@
-def fun sumEven as this:
+def fun sumEven as:
     take list[nat] nums;
     expect nat;
     def nat sum as 0;
-    def nat numsLen as what len with [nums] gives;
+    def nat numsLen as len[nums];
     def nat i as 0;
     do this numsLen times:
         if nums[i] % 2 = 0:
-            redef sum as sum + nums[i];
+            sum as sum + nums[i];
             \
-        redef i as i + 1;
+        i as i + 1;
         \
     give sum;

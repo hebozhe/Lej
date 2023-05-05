@@ -25,10 +25,10 @@ func primValue(r rune) uint8 {
 	case '[', ']':
 		return 1
 	// Line ends:
-	case ';', ':', '!':
+	case ';', ':', '\\', '!', '?':
 		return 1
-	// Strings:
-	case '\'':
+	// Characters and Strings:
+	case '\'', '"':
 		return 2
 	// Comments
 	case '`':
@@ -41,8 +41,6 @@ func primValue(r rune) uint8 {
 var keywords map[string]string = map[string]string{
 	// Assignment keywords:
 	"def": "def", "as": "as",
-	// Reassignment keywords:
-	"redef": "redef",
 
 	// Type declarations:
 	"chr":  "chr",
@@ -63,11 +61,8 @@ var keywords map[string]string = map[string]string{
 	// Logical operators:
 	"and": "and", "or": "or", "not": "not",
 
-	// "this":
-	"this": "this",
-
 	// Loop-specific keywords:
-	"do": "do", "times": "do", "until": "until",
+	"do": "do", "this": "this", "times": "times", "until": "until",
 	"back": "back", "up": "up", "out": "out",
 
 	// Conditional and loop block close symbol:
@@ -75,7 +70,6 @@ var keywords map[string]string = map[string]string{
 
 	// Function keywords:
 	"take": "take", "expect": "expect", "give": "give",
-	"what": "what", "gives": "gives", "with": "with",
 
 	// Module importing:
 	"use": "use", "from": "from",
