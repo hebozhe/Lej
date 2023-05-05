@@ -2,7 +2,7 @@ def fun reverseStr as:
     take str s;
     expect str;
     def str reversed as "";
-    def sLen as len[s];
+    def nat sLen as len[s];
     def chr c as '';
     def nat i as sLen - 1;
     do this sLen times:

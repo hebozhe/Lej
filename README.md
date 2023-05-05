@@ -87,7 +87,7 @@ from showing use showing;
 def brou               spacedOkay as               T;
 if spacedOkay:  
 def brou didShowOnTerminal
-as what showing with ["Conditional caught!"] gives; \
+as showing["Conditional caught!"]; \
 else:  def brou didShowOnTerminal as F; \ otherwise: def brou didShowOnTerminal as U; \
 ```
 ---
@@ -111,7 +111,7 @@ def fun reverseStr as this:
     take str s;
     expect str;
     def str reversed as "";
-    def sLen as what len with [s] gives;
+    def nat sLen as len[s];
     def chr c as '';
     def nat i as sLen - 1;
     do this sLen times: `← Open a do-times-block.`
@@ -152,8 +152,8 @@ Example:
 def fun multiplyTups as this:
     take tup[int] tupA, tup[int] tupB;
     expect tup[int];
-    def nat lenA as what len with [tupA] gives;
-    def nat lenB as what len with [tupB] gives;
+    def nat lenA as len[tupA];
+    def nat lenB as len[tupB];
     if not [lenA = lenB]:
         give [];
         \ `← Exit the if-block.`
@@ -178,7 +178,7 @@ def fun countCharFreq as this:
     take str s;
     expect dict[chr nat];
     def dict[chr nat] frequencies as [];
-    def sLen as what len with [s] gives;
+    def nat sLen as len[s];
     def nat i as 0;
     def chr c as '';
     def brou alreadyPresent as U;
