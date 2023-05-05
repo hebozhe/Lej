@@ -13,3 +13,4 @@ def fun multiplyTups as:
         result as result + [tupA[i] * tupB[j]];
         \
     give result;
+    \

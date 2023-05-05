@@ -120,6 +120,7 @@ def fun reverseStr as this:
         i as i - 1;
         \
     give reversed;
+    \
 ```
 ---
 
@@ -139,6 +140,7 @@ def fun fib as this:
         give n;
         \
     give [what fib with [n - 2] gives] + [what fib with [n - 1] gives]; `← The function calls are evaluated before the addition.`
+    \
 ```
 ---
 
@@ -164,6 +166,7 @@ def fun multiplyTups as this:
         result as result + [tupA[i] * tupB[j]];
         \ `← Exit the do-times-block.`
     give result;
+    \
 ```
 ---
 
@@ -194,6 +197,7 @@ def fun countCharFreq as this:
         i as i + 1;
         \
     give frequencies;
+    \
 ```
 ---
 

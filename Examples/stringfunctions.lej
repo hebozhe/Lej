@@ -11,6 +11,7 @@ def fun reverseStr as:
         i as i - 1;
         \
     give reversed;
+    \
 
 
 def fun isPalindrome as:
@@ -21,6 +22,7 @@ def fun isPalindrome as:
         give T;
         \
     give F;
+    \
 
 
 def fun ratToDecString as:
@@ -42,3 +44,4 @@ def fun ratToDecString as:
         dec as dec + [q as str];
         \
     give dec;
+    \

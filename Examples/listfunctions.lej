@@ -11,3 +11,41 @@ def fun sumEven as:
         i as i + 1;
         \
     give sum;
+    \
+
+
+def fun swap as:
+  take list[nat] nums, nat i, nat j;
+  expect list[nat];
+  def list[nat] newNums as nums;
+  def nat temp as newNums[i];
+  newNums[i] as newNums[j];
+  newNums[j] as temp;
+  give newNums;
+  \
+
+
+def fun bubbleSort as:
+  take list[nat] nums;
+  expect list[nat];
+  def nat n as len[nums];
+  def nat i as 0;
+  def nat j as 0;
+  def brou swapped as F;
+  do this n - 1 times:
+    swapped as F;
+    j as 0;
+    do this [n - i] - 1 times:
+      if nums[j] > nums[j + 1]:
+        nums as swap[nums, j, j + 1];
+        swapped as T;
+        \
+      j as j + 1;
+      \
+    if not swapped:
+      out!
+      \
+    i as i + 1;
+    \
+  give nums;
+  \

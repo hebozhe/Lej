@@ -18,3 +18,4 @@ def fun countCharFreq as:
         i as i - 1;
         \
     give frequencies;
+    \
