@@ -49,3 +49,37 @@ def fun bubbleSort as:
     \
   give nums;
   \
+
+
+def fun intersect as:
+    take list[nat] list1, list[nat] list2;
+    expect list[nat];
+    def list[nat] intersectList as [];
+    def list[nat] matchSublist as [];
+    def nat i as 0;
+    def nat j as 0;
+    do this len[list1] times:
+        j as 0;
+        do this len[list2] times:
+            if list1[i] = list2[j]:
+                matchSublist as [list[i]];
+                intersectList as intersectList + matchSublist;
+                \
+            j as j + 1
+        \
+        i as i + 1;
+    give intersectList;
+    \
+
+
+def fun flatten as:
+  take list[list[str]] strLists;
+  expect list[str];
+  def list[str] flattened as [];
+  def nat i as 0;
+  do this len[strLists] times:
+    flattened as flattened + strLists[i];
+    i as i + 1;
+    \
+  give flattened;
+  \
