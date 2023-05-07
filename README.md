@@ -71,6 +71,8 @@ re zero `which was defined above
              and continues onto this line` as -1 + 1;
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ## **Whitespaces**
 ---
@@ -91,12 +93,16 @@ as showing["Conditional caught!"]; \
 else:  def brou didShowOnTerminal as F; \ otherwise: def brou didShowOnTerminal as U; \
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ## **Punctuations**
 ---
 Because Lej can be minified, punctuation plays a major role in organizing sections of the language.
 
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Ending Lines**
 ---
@@ -123,6 +129,8 @@ def fun reverseStr as this:
     \
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Setting Scopes**
 ---
@@ -143,6 +151,8 @@ def fun fib as this:
     \
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Closing Blocks**
 ---
@@ -166,9 +176,11 @@ def fun multiplyTups as this:
         result as result + [tupA[i] * tupB[j]];
         \ `← Exit the do-times-block.`
     give result;
-    \
+    \ `← Exit the function.`
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Checking Legality**
 ---
@@ -200,6 +212,7 @@ def fun countCharFreq as this:
     \
 ```
 ---
+[Back to Table of Contents](#documentation)
 
 
 ## **Brouwerians**
@@ -213,6 +226,8 @@ def brou lemWithUnsure as thisUnsure or not thisUnsure; `← Evaluates to U.`
 def brou lncWithUnsure as not [thisUnsure and not thisUnsure]; `← Evaluates to T.`
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Primitive Values**
 ---
@@ -225,6 +240,8 @@ def brou lncWithOneUnsure as not [thisUnsure and not thisUnsure]; `← Evaluates
 def brou lncWithTwoUnsures as not [U and not U]; `← Evaluates to U, since both U variables occupy different possible truth-values.`
 ```
 ---
+[Back to Table of Contents](#documentation)
+
 
 ### **Brouwerian Operations**
 ---
@@ -251,4 +268,103 @@ valA and not valA
 `
 ```
 ---
+[Back to Table of Contents](#documentation)
+
+
+## **Numerics and Arithmetic**
+---
+Lej seeks to preserve exact calculations at every step of a program. Thus, there is no `float` type employed anywhere in Lej, and that, along with the Brouwerians, probably sets Lej most apart from other programming languages.
+
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Numeric Types**
+---
+There are three numeric types with allowed subtypes for bit sizes.
+- `nat` for all natural numbers (along with 0), including `nat8`, `nat16`, `nat32`, and `nat64` (mirroring `nat`);
+- `int` for all integers, including `int8`, `int16`, `int32`, and `int64` (mirroring `int`); and
+- `rat` for all rational numbers, including `rat8`, `rat16`, `rat32`, and `rat64` (mirroring `rat`).
+
+While `nat` and `int` types correspond to the unsigned and signed integers of other languages more directly, and thus are primitive, the `rat` type is a `map[str int]` with the string `"num"` (representing the numerator) and `"den"` (the denominator).
+
+However, the `rat` type is not merely a storage of divisions that do not resolve to `nat` or `int` types. `rat` types are also automatically simplified during evaluation.
+
+Example:
+```
+def rat threeFourths as 24 / 32; `← Evaluates to 3 / 4, since 8 is the GCD of 24 and 32.`
+def rat eightFifths as 1.6;  `← Evaluates to 8 / 5, since 1.6 = (16 / 10) = (8 / 5).`
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Arithmetic Operations**
+---
+Arithmetic operations evaluate pairs ofn umbers to other numeric types.
+
+Only these five arithmetic operations exist:
+- `+` for addition,
+- `-` for subtraction,
+- `*` for multiplication,
+- `/` for division, and
+- `.` for decimalization.
+
+Here, `/` and `.` are the only risky operation to deal with in working with arithmetic, since divisions that do not simplify to `int` or `nat` types, but are meant to be assigned to `int` or `nat` variables, will throw errors.
+
+Example:
+```
+def nat threeLongForm as (24 / 32) * (40 / 10); `← Evaluates to 3, since (3 / 4) * (4 / 1) = (12 / 4) = (3 / 1) = 3.`
+def int halfOfThree as threeLongForm / -2;  `← ERROR! Since (3 / -2) only simplifies to (-3 / 2), it cannot be an integer.`
+```
+
+Further, be wary of decimalization places, since Lej _will_ count every place to the bitter end and find the GCD for that value, all of which take more time than would otherwise be required without it.
+
+Example:
+```
+def nat threeLongForm as 3.00000; `← Evaluates to 3, since 3.00000 = (300000 / 100000) = (3 / 1) = 3.`
+def nat threeShortForm as 3; `← Evaluates to 3, performing no operations.`
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Arithmetic Evaluations**
+---
+Arithmetic evaluations evaluate pairs of numbers to Brouwerians (though only `T` or `F`).
+
+Only these three arithmetic evaluations exist:
+- `<` for less-than comparison,
+- `>` for greater-than comparison, and
+- `=` for equality comparison.
+
+Unlike most other programming languages, operator combinations like `<=` and `!=` are not meaningful in Lej. This will extend the size of one's code; but, it reveals how many evaluations are actually occurring in a piece of code.
+
+Example:
+```
+def int a as -42;
+def int b as 99 / 11;
+def brou bNotLessThana as not [b < a]; `← Evaluates to T.`
+def brou aAndbGreaterThanOrEqualTo50 as [[a > 0] or [a = 0]] and [[b > 0] or [b = 0]]; `← Evaluates to F.`
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+## **Characters**
+---
+Characters are individual UTF-8 encodings that are mutually comparable. They're also the basic building blocks of `str` and `text` types.
+
+`chr` values are comparable via the arithmetic evaluation symbols.
+
+Example:
+```
+def chr enA as 'A';
+def chr zhDe as '的';
+def brou aLessThanDe as enA < zhDe; `← Evaluates to T.`
+def chr lastTwoEnglishLetters as 'YZ'; `← ERROR! Too many characters for a single character type.`
+```
+---
+[Back to Table of Contents](#documentation)
+
 
