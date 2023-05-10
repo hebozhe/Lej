@@ -25,7 +25,7 @@ Lej (pronounced as "ledge") is a statically typed programming language that aims
     - [**Closing Blocks**](#closing-blocks)
     - [**Checking Legality**](#checking-legality)
 4. [**Brouwerians**](#brouwerians)
-    - [**Primitive Values**](#primitive-values) (`T`, `U`, and `F`)
+    - [**Brouwerian Primitives**](#brouwerian-primitives) (`T`, `U`, and `F`)
     - [**Brouwerian Operations**](#brouwerian-operations) (`and`, `or`, and `not`)
 5. [**Numerics and Arithmetic**](#numerics-and-arithmetic)
     - [**Numeric Types**](#numeric-types) (`nat`, `int`, and `rat`)
@@ -229,7 +229,7 @@ def brou lncWithUnsure as not [thisUnsure and not thisUnsure]; `← Evaluates to
 [Back to Table of Contents](#documentation)
 
 
-### **Primitive Values**
+### **Brouwerian Primitives**
 ---
 The primitive Brouwerians `T` and `F` work exactly as their Boolean counterparts. They evaluate to all of the classical (Boolean) evaluations when used on their own. However, every literal `U` ("unknown") in a program refers to a unique valuation.
 
@@ -375,19 +375,22 @@ The data type ontology of Lej neatly divides into two classifications: read-only
 
 This table adequately breaks down the entire type system of Lej:
 
-|    Name    | Signature |        Composition       | Mutable? |    Key Types   |   Value Types  | Key-Value Relation |                                                                Closest Analog Goals                                                                |
-|:----------:|:---------:|:------------------------:|:--------:|:--------------:|:--------------:|:------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
-|   Natural  |   `nat`   |         Primitive        |     F    |                |                |                    | [Rust's `u8` to `u64` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
-|   Integer  |   `int`   |         Primitive        |     F    |                |                |                    | [Rust's `18` to `164` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
-|  Character |   `chr`   |         Primitive        |     F    |                |                |                    | [Go's `rune` Type](https://go.dev/ref/spec#Rune_literals)                                                                                          |
-|    Tuple   |   `tup`   |        First-Class       |     F    |      `int`     | All Immutables |     One-to-One     | [TypeScript's `ReadOnlyArray` Type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#a-new-syntax-for-readonlyarray) |
-|    List    |   `list`  |        First-Class       |     T    |      `int`     |       All      |     One-to-One     | [Go's Array and Slice Types](https://go.dev/ref/spec#Array_types)                                                                                  |
-|   String   |   `str`   |        `tup[chr]`        |     F    |      `int`     |      `chr`     |     One-to-One     | [Go's `string` Type](https://go.dev/ref/spec#String_types)                                                                                         |
-|    Text    |   `text`  |        `list[chr]`       |     T    |      `int`     |      `chr`     |     One-to-One     | [Ruby's `String` Type](https://ruby-doc.org/3.2.2/String.html)                                                                                     |
-|   Record   |   `rec`   |        First-Class       |     F    |      `str`     | All Immutables |     One-to-Many    | [Dart (3.0)'s `record` Type](https://github.com/dart-lang/language/blob/main/accepted/future-releases/records/records-feature-specification.md)    |
-|    Data    |   `data`  |        First-Class       |     T    |      `str`     |       All      |     One-to-Many    | [Go's `struct` Type](https://go.dev/ref/spec#Struct_types)                                                                                         |
-|     Map    |   `map`   |   `rec[tup[X], tup[Y]]`  |     F    | All Immutables | All Immutables |     One-to-One     | A Unique, Key-Sorted Analog to [Python's (Rejected) `frozendict` Type](https://peps.python.org/pep-0416/)                                          |
-| Dictionary |   `dict`  | `data[list[X], list[Y]]` |     T    | All Immutables |       All      |     One-to-One     | A Unique, Key-Sorted Analog to [Go's `map` Type](https://go.dev/ref/spec#Map_types)                                                                |
+| Name | Signature | Composition | Mutable? | Key Types | Value Types | Mapping | Closest Analog Goals |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Natural | `nat` | Primitive | F |  |  |  | [Rust's `u8` to `u64` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types) |
+| Integer | `int` | Primitive | F |  |  |  | [Rust's `18` to `164` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types) |
+| Character | `chr` | Primitive | F |  |  |  | [Go's `rune` Type](https://go.dev/ref/spec#Rune_literals) |
+| Tuple | `tup` | First-Class | F | `int` | All Immutables | 1:1 | [TypeScript's `ReadOnlyArray` Type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#a-new-syntax-for-readonlyarray) |
+| List | `list` | First-Class | T | `int` | All | 1:1 | [Go's Array and Slice Types](https://go.dev/ref/spec#Array_types) |
+| String | `str` | `tup[chr]` | F | `int` | `chr` | 1:1 | [Go's `string` Type](https://go.dev/ref/spec#String_types) |
+| Text | `text` | `list[chr]` | T | `int` | `chr` | 1:1 | [Ruby's `String` Type](https://ruby-doc.org/3.2.2/String.html) |
+| Record | `rec` | First-Class | F | `str` | All Immutables | 1:Many | [Dart (3.0)'s `record` Type](https://github.com/dart-lang/language/blob/main/accepted/future-releases/records/records-feature-specification.md) |
+| Data | `data` | First-Class | T | `str` | All | 1:Many | [Go's `struct` Type](https://go.dev/ref/spec#Struct_types) |
+| Map | `map` | `rec[tup[X], tup[Y]]` | F | All Immutables | All Immutables | 1:1 | A Unique, Key-Sorted Analog<br />to [Python's (Rejected) `frozendict` Type](https://peps.python.org/pep-0416/) |
+| Dictionary | `dict` | `data[list[X], list[Y]]` | T | All Immutables | All | 1:1 | A Unique, Key-Sorted Analog<br />to [Go's `map` Type](https://go.dev/ref/spec#Map_types) |
+| Brouwerian | `brou` | `rec[nat, tup[nat]]` | F |  |  |  | Unique |
+| Rational | `rat` | `rec[int, int]` | F |  |  |  | [Julia's Rational Number Type](https://docs.julialang.org/en/v1/manual/complex-and-rational-numbers/#Rational-Numbers) |
+
 
 ---
 [Back to Table of Contents](#documentation)
