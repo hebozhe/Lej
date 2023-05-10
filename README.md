@@ -375,22 +375,40 @@ The data type ontology of Lej neatly divides into two classifications: read-only
 
 This table adequately breaks down the entire type system of Lej:
 
-| Name | Signature | Composition | Mutable? | Key Types | Value Types | Mapping | Closest Analog Goals |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Natural | `nat` | Primitive | F |  |  |  | [Rust's `u8` to `u64` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types) |
-| Integer | `int` | Primitive | F |  |  |  | [Rust's `18` to `164` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types) |
-| Character | `chr` | Primitive | F |  |  |  | [Go's `rune` Type](https://go.dev/ref/spec#Rune_literals) |
-| Tuple | `tup` | First-Class | F | `int` | All Immutables | 1:1 | [TypeScript's `ReadOnlyArray` Type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#a-new-syntax-for-readonlyarray) |
-| List | `list` | First-Class | T | `int` | All | 1:1 | [Go's Array and Slice Types](https://go.dev/ref/spec#Array_types) |
-| String | `str` | `tup[chr]` | F | `int` | `chr` | 1:1 | [Go's `string` Type](https://go.dev/ref/spec#String_types) |
-| Text | `text` | `list[chr]` | T | `int` | `chr` | 1:1 | [Ruby's `String` Type](https://ruby-doc.org/3.2.2/String.html) |
-| Record | `rec` | First-Class | F | `str` | All Immutables | 1:Many | [Dart (3.0)'s `record` Type](https://github.com/dart-lang/language/blob/main/accepted/future-releases/records/records-feature-specification.md) |
-| Data | `data` | First-Class | T | `str` | All | 1:Many | [Go's `struct` Type](https://go.dev/ref/spec#Struct_types) |
-| Map | `map` | `rec[tup[X], tup[Y]]` | F | All Immutables | All Immutables | 1:1 | A Unique, Key-Sorted Analog<br />to [Python's (Rejected) `frozendict` Type](https://peps.python.org/pep-0416/) |
-| Dictionary | `dict` | `data[list[X], list[Y]]` | T | All Immutables | All | 1:1 | A Unique, Key-Sorted Analog<br />to [Go's `map` Type](https://go.dev/ref/spec#Map_types) |
-| Brouwerian | `brou` | `rec[nat, tup[nat]]` | F |  |  |  | Unique |
-| Rational | `rat` | `rec[int, int]` | F |  |  |  | [Julia's Rational Number Type](https://docs.julialang.org/en/v1/manual/complex-and-rational-numbers/#Rational-Numbers) |
+|    Name    | Signature |        Composition       | Mutable? |    Key Types   |   Value Types  | Mapping |
+|:----------:|:---------:|:------------------------:|:--------:|:--------------:|:--------------:|:-------:|
+|   Natural  |   `nat`   |         Primitive        |     F    |                |                |         |
+|   Integer  |   `int`   |         Primitive        |     F    |                |                |         |
+|  Character |   `chr`   |         Primitive        |     F    |                |                |         |
+|    Tuple   |   `tup`   |        First-Class       |     F    |      `int`     | All Immutables |   1:1   |
+|    List    |   `list`  |        First-Class       |     T    |      `int`     |       All      |   1:1   |
+|   String   |   `str`   |        `tup[chr]`        |     F    |      `int`     |      `chr`     |   1:1   |
+|    Text    |   `text`  |        `list[chr]`       |     T    |      `int`     |      `chr`     |   1:1   |
+|   Record   |   `rec`   |        First-Class       |     F    |      `str`     | All Immutables |  1:Many |
+|    Data    |   `data`  |        First-Class       |     T    |      `str`     |       All      |  1:Many |
+|     Map    |   `map`   |   `rec[tup[X], tup[Y]]`  |     F    | All Immutables | All Immutables |   1:1   |
+| Dictionary |   `dict`  | `data[list[X], list[Y]]` |     T    | All Immutables |       All      |   1:1   |
+| Brouwerian |   `brou`  |   `rec[nat, tup[nat]]`   |     F    |                |                |         |
+|  Rational  |   `rat`   |      `rec[int, int]`     |     F    |                |                |         |
 
+
+For those already familiar with other languages, this table describes the inspirations and analogous types in Lej:
+
+|    Name    |                                                                Closest Analog Goals                                                                |
+|:----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
+|   Natural  | [Rust's `u8` to `u64` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
+|   Integer  | [Rust's `18` to `164` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
+|  Character | [Go's `rune` Type](https://go.dev/ref/spec#Rune_literals)                                                                                          |
+|    Tuple   | [TypeScript's `ReadOnlyArray` Type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#a-new-syntax-for-readonlyarray) |
+|    List    | [Go's Array and Slice Types](https://go.dev/ref/spec#Array_types)                                                                                  |
+|   String   | [Go's `string` Type](https://go.dev/ref/spec#String_types)                                                                                         |
+|    Text    | [Ruby's `String` Type](https://ruby-doc.org/3.2.2/String.html)                                                                                     |
+|   Record   | [Dart (3.0)'s `record` Type](https://github.com/dart-lang/language/blob/main/accepted/future-releases/records/records-feature-specification.md)    |
+|    Data    | [Go's `struct` Type](https://go.dev/ref/spec#Struct_types)                                                                                         |
+|     Map    | A Unique, Key-Sorted Analog to [Python's (Rejected) `frozendict` Type](https://peps.python.org/pep-0416/)                                          |
+| Dictionary | A Unique, Key-Sorted Analog to [Go's `map` Type](https://go.dev/ref/spec#Map_types)                                                                |
+| Brouwerian | Unique                                                                                                                                             |
+|  Rational  | [Julia's Rational Number Type](https://docs.julialang.org/en/v1/manual/complex-and-rational-numbers/#Rational-Numbers)                             |
 
 ---
 [Back to Table of Contents](#documentation)
