@@ -345,7 +345,8 @@ Example:
 def int a as -42;
 def int b as 99 / 11;
 def brou bNotLessThana as not [b < a]; `← Evaluates to T.`
-def brou aAndbGreaterThanOrEqualTo50 as [[a > 0] or [a = 0]] and [[b > 0] or [b = 0]]; `← Evaluates to F.`
+def brou aAndbGreaterThanOrEqualTo0 as [[a > 0] or [a = 0]] and [[b > 0] or [b = 0]]; `← Evaluates to F.`
+aAndbGreaterThanOrEqualTo50 as [a > -1] and [b > -1] `← Evaluates to F, also, since it's equivalent to the expression above.`
 ```
 ---
 [Back to Table of Contents](#documentation)
@@ -364,6 +365,30 @@ def chr zhDe as '的';
 def brou aLessThanDe as enA < zhDe; `← Evaluates to T.`
 def chr lastTwoEnglishLetters as 'YZ'; `← ERROR! Too many characters for a single character type.`
 ```
+---
+[Back to Table of Contents](#documentation)
+
+
+## **Data Types**
+---
+The data type ontology of Lej neatly divides into two classifications: read-only data types and read-writable data types. Given these constraints, the read-only data types, themselves, only accept other read-only data types or immutable types. Read-writable data types are more open. The main restriction to a read-only data type is that elements cannot be reassigned, added, or deleted once it is defined.
+
+This table adequately breaks down the entire type system of Lej:
+
+|    Name    | Signature |        Composition       | Mutable? |    Key Types   |   Value Types  | Key-Value Relation |                                                                Closest Analog Goals                                                                |
+|:----------:|:---------:|:------------------------:|:--------:|:--------------:|:--------------:|:------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
+|   Natural  |   `nat`   |         Primitive        |     F    |                |                |                    | [Rust's `u8` to `u64` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
+|   Integer  |   `int`   |         Primitive        |     F    |                |                |                    | [Rust's `18` to `164` Types](https://doc.rust-lang.org/book/ch03-02-data-types.html#integer-types)                                                 |
+|  Character |   `chr`   |         Primitive        |     F    |                |                |                    | [Go's `rune` Type](https://go.dev/ref/spec#Rune_literals)                                                                                          |
+|    Tuple   |   `tup`   |        First-Class       |     F    |      `int`     | All Immutables |     One-to-One     | [TypeScript's `ReadOnlyArray` Type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#a-new-syntax-for-readonlyarray) |
+|    List    |   `list`  |        First-Class       |     T    |      `int`     |       All      |     One-to-One     | [Go's Array and Slice Types](https://go.dev/ref/spec#Array_types)                                                                                  |
+|   String   |   `str`   |        `tup[chr]`        |     F    |      `int`     |      `chr`     |     One-to-One     | [Go's `string` Type](https://go.dev/ref/spec#String_types)                                                                                         |
+|    Text    |   `text`  |        `list[chr]`       |     T    |      `int`     |      `chr`     |     One-to-One     | [Ruby's `String` Type](https://ruby-doc.org/3.2.2/String.html)                                                                                     |
+|   Record   |   `rec`   |        First-Class       |     F    |      `str`     | All Immutables |     One-to-Many    | [Dart (3.0)'s `record` Type](https://github.com/dart-lang/language/blob/main/accepted/future-releases/records/records-feature-specification.md)    |
+|    Data    |   `data`  |        First-Class       |     T    |      `str`     |       All      |     One-to-Many    | [Go's `struct` Type](https://go.dev/ref/spec#Struct_types)                                                                                         |
+|     Map    |   `map`   |   `rec[tup[X], tup[Y]]`  |     F    | All Immutables | All Immutables |     One-to-One     | A Unique, Key-Sorted Analog to [Python's (Rejected) `frozendict` Type](https://peps.python.org/pep-0416/)                                          |
+| Dictionary |   `dict`  | `data[list[X], list[Y]]` |     T    | All Immutables |       All      |     One-to-One     | A Unique, Key-Sorted Analog to [Go's `map` Type](https://go.dev/ref/spec#Map_types)                                                                |
+
 ---
 [Back to Table of Contents](#documentation)
 
