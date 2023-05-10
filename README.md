@@ -375,21 +375,21 @@ The data type ontology of Lej neatly divides into two classifications: read-only
 
 This table adequately breaks down the entire type system of Lej:
 
-|    Name    | Signature |        Composition       | Mutable? |    Key Types   |   Value Types  | Mapping |
-|:----------:|:---------:|:------------------------:|:--------:|:--------------:|:--------------:|:-------:|
-|   Natural  |   `nat`   |         Primitive        |     F    |                |                |         |
-|   Integer  |   `int`   |         Primitive        |     F    |                |                |         |
-|  Character |   `chr`   |         Primitive        |     F    |                |                |         |
-|    Tuple   |   `tup`   |        First-Class       |     F    |      `int`     | All Immutables |   1:1   |
-|    List    |   `list`  |        First-Class       |     T    |      `int`     |       All      |   1:1   |
-|   String   |   `str`   |        `tup[chr]`        |     F    |      `int`     |      `chr`     |   1:1   |
-|    Text    |   `text`  |        `list[chr]`       |     T    |      `int`     |      `chr`     |   1:1   |
-|   Record   |   `rec`   |        First-Class       |     F    |      `str`     | All Immutables |  1:Many |
-|    Data    |   `data`  |        First-Class       |     T    |      `str`     |       All      |  1:Many |
-|     Map    |   `map`   |   `rec[tup[X], tup[Y]]`  |     F    | All Immutables | All Immutables |   1:1   |
-| Dictionary |   `dict`  | `data[list[X], list[Y]]` |     T    | All Immutables |       All      |   1:1   |
-| Brouwerian |   `brou`  |   `rec[nat, tup[nat]]`   |     F    |                |                |         |
-|  Rational  |   `rat`   |      `rec[int, int]`     |     F    |                |                |         |
+|    Name    | Signature |        Composition       | Mutable? |    Key Types   |   Value Types  |
+|:----------:|:---------:|:------------------------:|:--------:|:--------------:|:--------------:|
+|   Natural  |   `nat`   |         Primitive        |     F    |                |                |
+|   Integer  |   `int`   |         Primitive        |     F    |                |                |
+|  Character |   `chr`   |         Primitive        |     F    |                |                |
+|    Tuple   |   `tup`   |        First-Class       |     F    |      `int`     | All Immutables |
+|    List    |   `list`  |        First-Class       |     T    |      `int`     |       All      |
+|   String   |   `str`   |        `tup[chr]`        |     F    |      `int`     |      `chr`     |
+|    Text    |   `text`  |        `list[chr]`       |     T    |      `int`     |      `chr`     |
+|   Record   |   `rec`   |        First-Class       |     F    |      `str`     | All Immutables |
+|    Data    |   `data`  |        First-Class       |     T    |      `str`     |       All      |
+|     Map    |   `map`   |   `rec[tup[X], tup[Y]]`  |     F    | All Immutables | All Immutables |
+| Dictionary |   `dict`  | `data[list[X], list[Y]]` |     T    | All Immutables |       All      |
+| Brouwerian |   `brou`  |   `rec[nat, tup[nat]]`   |     F    |                |                |
+|  Rational  |   `rat`   |      `rec[int, int]`     |     F    |                |                |
 
 
 For those already familiar with other languages, this table describes the inspirations and analogous types in Lej:
