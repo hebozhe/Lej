@@ -35,8 +35,8 @@ Lej (pronounced as "ledge") is a statically typed programming language that aims
 7. [**Data Types**](#data-types)
     - [**Tuples and Lists**](#tuples-and-lists) (`tup` and `list`)
     - [**Strings and Text**](#strings-and-text) (`str` and `text`)
-    - [**Maps and Dictionaries**](#maps-and-dictionaries) (`map` and `dict`)
     - [**Records and Data**](#records-and-data) (`rec` and `data`)
+    - [**Maps and Dictionaries**](#maps-and-dictionaries) (`map` and `dict`)
 ### Basic Control Flow
 8. [**Assignment and Reassignment**](#assignment-and-reassignment) (`def` and `as`)
     - [**Variable Name Rules**](#variable-name-rules)
@@ -62,7 +62,7 @@ Lej (pronounced as "ledge") is a statically typed programming language that aims
 
 ## **Comments**
 ---
-There are only multiline comments in Lej. They are initialized and terminated with unescaped "`" characters. They can go anywhere, as they are skipped at lexing and parsing.
+There are only multiline comments in Lej. They are initialized and terminated with unescaped `` ` `` characters. They can go anywhere, as they are skipped at lexing and parsing.
 
 Example:
 ```
@@ -134,20 +134,36 @@ def fun reverseStr as this:
 
 ### **Setting Scopes**
 ---
+There are a handful of scope delimiters:
+- `{` and `}` enclose operations,
+- `[` and `]` enclose data types outside of characters and strings, 
+- `'` and `'` enclose characters,
+- `"` and `"` enclose strings, and
+- `` ` `` and `` ` `` enclose comments.
 
-Scopes for operations, data type definitions, and hard-coded data-type expressions, are enclosed in square brackets `[` and `]`.
-
-Scopes are paramount in Lej, particularly with expressions. It is always syntactically illegal in Lej to leave ambiguous subexpressions. For instance, `3 + 2 / 1` throws an error. The programmer must clarify it as `[3 + 2] / 1` or `3 + [2 / 1]`.
+Scopes are paramount in Lej, particularly with expressions. It is always syntactically illegal in Lej to leave ambiguous subexpressions. For instance, `3 + 2 / 1` throws an error. The programmer must clarify it as `{3 + 2} / 1` or `3 + {2 / 1}`.
 
 Example:
 ```
-def fun fib as this:
-    take nat n;
-    expect nat;
-    if n < 2:
-        give n;
+def fun ratToDecString as:
+    take rat r;
+    expect str;
+    def int n as r["num"];
+    def int d as r["den"];
+    def int q as {n - {n % d}} / d; `← Perform the modulus before the subtraction, before the division.`
+    def int r as n % d;
+    def str dec as q as str;
+    if r = 0:
+        give dec;
         \
-    give [what fib with [n - 2] gives] + [what fib with [n - 1] gives]; `← The function calls are evaluated before the addition.`
+    dec as dec + ".";
+    do this until r = 0:
+        n as r * 10;
+        q as {n - {n % d}} / d;
+        r as n % d;
+        dec as dec + {q as str}; `← Cast q into a string before concatenating the strings.`
+        \
+    give dec;
     \
 ```
 ---
@@ -245,7 +261,7 @@ def brou lncWithTwoUnsures as not [U and not U]; `← Evaluates to U, since both
 
 ### **Brouwerian Operations**
 ---
-There are four operations that work on Brouwerians:
+There are three operations that work on Brouwerians:
 - `and` for conjunction,
 - `or` for disjunction, and
 - `not` for negation.
@@ -344,9 +360,9 @@ Example:
 ```
 def int a as -42;
 def int b as 99 / 11;
-def brou bNotLessThana as not [b < a]; `← Evaluates to T.`
-def brou aAndbGreaterThanOrEqualTo0 as [[a > 0] or [a = 0]] and [[b > 0] or [b = 0]]; `← Evaluates to F.`
-aAndbGreaterThanOrEqualTo50 as [a > -1] and [b > -1] `← Evaluates to F, also, since it's equivalent to the expression above.`
+def brou bNotLessThana as not {b < a}; `← Evaluates to T.`
+def brou aAndbGreaterThanOrEqualTo0 as {{a > 0} or {a = 0}} and {{b > 0} or {b = 0}}; `← Evaluates to F.`
+aAndbGreaterThanOrEqualTo50 as {a > -1} and {b > -1} `← Evaluates to F, also, since it's equivalent to the expression above.`
 ```
 ---
 [Back to Table of Contents](#documentation)
@@ -414,3 +430,139 @@ For those already familiar with other languages, this table describes the inspir
 [Back to Table of Contents](#documentation)
 
 
+### **Tuples and Lists**
+---
+Tuples (`tup`) and lists (`list`) are the read-only and read-writable, one-to-one `nat`-to-type mappings. When referring to both types, the term "array" will be used.
+
+Only these three operations exist for arrays:
+- `+` for concatenation,
+- `-` for decatenation, 
+- `*`, for array joining, and
+- `/` for array splitting.
+
+All operations only work on like-to-like element types, but they can be performed on both, so long as the type of a resulting assignment is clearly specified to be a `tup` or `list`.
+
+In other words, this is all legal in Lej:
+```
+def tup[nat] tupA as [0, 1, 4, 9, 16, 25, 36];
+def list[nat] listB as [4, 9];
+def tup[tup[nat]] newTups as tupA / listB; `← Evaluates to [[0, 1], [16, 25, 36]].`
+tupA as newTups * []; `← Evaluates to [0, 1, 16, 25, 36].`
+```
+
+These evaluations exist for arrays:
+- `=` evaluates to `T` for two arrays `x` and `y` iff, for every mutual index `n`, `x[n] = y[n]` evaluates to `T`.
+- `<` evaluates to `T` for two arrays `x` and `y` iff, for at least one mutual index `n`, `x[n] < y[n]` evaluates to `T`; or, iff `x[0..m] = y[0..m]` evaluates to `T` where `m` is the shorter length of `x` and `y`, and `x` is shorter than `y`.
+- `>` evaluates to `T` for two arrays `x` and `y` iff, for at least one mutual index `n`, `x[n] > y[n]` evaluates to `T`; or, iff `x[0..m] = y[0..m]` evaluates to `T` where `m` is the shorter length of `x` and `y`, and `x` is longer than `y`.
+
+Example:
+```
+def tup[nat] tupA as [0, 1, 4, 9];
+def tup[nat] tupB as [0, 1, 4, 9, 16, 25];
+def brou aLessThanb as tupA < tupB; `← Evaluates to T.`
+```
+
+Slicing for arrays is accomplished via a `[a..b]` operation, where `a` and `b` are `nat` or `int` types. However, while slices can be called for both `tup` and `list` types in the _definiens_ of another operation, only `list` types allow slice reassignment.
+
+
+Lej also permits negative indexing.
+
+
+Example:
+```
+def tup[nat] thisTup as [2, 4, 6, 8];
+def list[int] thisList as [-2, -4, -8];
+thisList[1..2] as [thisList[1]] + [thisTup[2] * -1]; `← Evaluates thisList to [-2, -4, -6, -8].`
+thisTup[-1] as []; `← ERROR! Tuple item reassignment is not permitted.`
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Strings and Text**
+---
+Strings (`str`) and texts (`text`) are the read-only and read-writable, one-to-one `nat`-to-`chr` mappings.
+
+Because these types are just `tup[chr]` and `list[chr]` types under the hood, all of the same operations for [tuples and lists](#tuples-and-lists) apply to them. In fact, that's why the operators for Lej are what they are, since the intuition explaining, for example, decatenation, joining, and splitting follows from how they work with strings and texts.
+
+Example:
+```
+def str babysFirstWord as "mama";
+def str babysNextWord as "p" * {babysFirstWord / "m"}; `← Evaluates to "papa".`
+def str magicWord as "abr" + {{babysNextWord / "p"} * "cadabr"}; `← Evaluates to "abracadabra".`
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Records and Data**
+---
+Records (`rec`) and data (`data`) are the read-only and read-writable, one-to-many `str`-to-type mappings.  When referring to both types, the term "structure" will be used.
+
+Structures are, generally speaking, an organization type. They allow various more basic types to be packaged into a common namespace for reference in other cases. So, there are no operations or evaluations that apply to them, in general. Because all structures have `str` keys, however, their type declaration does not require explicit pairings to be stated.
+
+Example:
+```
+def rec[str, str, tup[nat16]] brouwer as ["name" "Luitzen", "surname" "Brouwer", "dobYYYYMMDD" [1881, 2, 27]];
+def rec[str, str, tup[nat16]] heyting as ["surname" "Arend", "surname" "Heyting", "dobYYYYMMDD" [1898, 5, 9]];
+def brou sameBirthYear as heyting["dobYYYYMMDD"][0] = brouwer["dobYYYYMMDD"][0]; `← Evaluates to F.`
+```
+
+All structure values must be instantiated at their initial assignments. This guarantees that all calls to structures' fields are legal.
+
+Example:
+```
+def rec[str, str, tup[nat16]] kripke as ["name" "Saul", "surname" "Kripke"]; `← ERROR! No tup[nat16] field was assigned.`
+```
+
+Further, Lej does not allow the creation of novel types. Therefore, to guarantee consistent record creation, functions should be used as constructors.
+
+Example:
+```
+def fun makeMathematicianRecord as this:
+    take str name, str surname, tup[nat16] dobYYYYMMDD;
+    expect rec[str, str, tup[nat16]];
+
+    `Perform the necessary checks for the tuple to make sure it's a legitimate date of birth.`
+    if not {len[dobYYYYMMDD] = 3}:
+        show["A date-of-birth tuple must house three fields, in the order YYYYMMDD."]!
+        exit[1]!
+        \
+    if not {{0 < dobYYYYMMDD[1]} and {dobYYYYMMDD[1] < 13}}:
+        show["The date-of-birth tuple must select a month from 1 to 12."]!
+        exit[1]!
+        \
+    if not {{0 < dobYYYYMMDD[2]} and {dobYYYYMMDD[2] < 32}}:
+        show["The date-of-birth tuple must select a day from 1 to 31."]!
+        exit[1]!
+        \
+    
+    def rec[str, str, tup[nat16]] mathematician as ["name" name, "surname" surname, "dobYYYYMMDD" dobYYYMMDD];
+    give mathematician;
+    \
+```
+---
+[Back to Table of Contents](#documentation)
+
+
+### **Maps and Dictionaries**
+---
+Maps (`map`) and dictionaries (`dict`) are the read-only and read-writable, one-to-one immutable-to-type mappings. When referring to both types, the term "mapping" will be used.
+
+Unlike mappings in other languages, mappings in Lej are key-sorted rather than hashed. This is done to _guarantee_ no collisions between key-value pairs, with lookups performed by binary search (O(log n) time, definitely) rather than hashing and index retrieval (O(1) time, maybe).
+
+Mapping types have two reserved keyword strings:
+- "keys" for mapping lookups and
+- "vals" for values aligned with the mapping.
+
+```
+def str uppercase as "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+def str lowercase as "zyxwvutsrqponmlkjihgfedcba";
+def map[str str] upperLower as ["keys" uppercase, "vals" lowercase];
+def chr capitalE as upperLower["keys"][4];
+```
+
+
+
+---
+[Back to Table of Contents](#documentation)

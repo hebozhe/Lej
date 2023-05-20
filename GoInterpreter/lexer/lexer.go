@@ -8,7 +8,7 @@ import (
 func primValue(r rune) uint8 {
 	switch r {
 	// 0 means endchar, so check whether a token is an ID or keyword.
-	// 1 means primitive symbol, so check a token whether ID of keyword and also add the symbol.
+	// 1 means primitive symbol, so check a token whether ID or keyword and also add the symbol.
 	// 2 means encloser, so continue the scan to the next identical encloser, and assign the str/text literal.
 	// 3 means comment tick, so continue the scan to the next identical encloser, and do nothing with it.
 	// 4 means it's not a primitive.
@@ -22,7 +22,7 @@ func primValue(r rune) uint8 {
 	case '=', '>', '<':
 		return 1
 	// Delimiters:
-	case '[', ']':
+	case '[', ']', '{', '}':
 		return 1
 	// Line ends:
 	case ';', ':', '\\', '!', '?':
@@ -47,7 +47,7 @@ var keywords map[string]string = map[string]string{
 	"brou": "brou",
 	"nat":  "nat", "nat8": "nat8", "nat16": "nat16", "nat32": "nat32", "nat64": "nat64",
 	"int": "int", "int8": "int8", "int16": "int16", "int32": "int32", "int64": "int64",
-	"rat": "rat",
+	"rat": "rat", "rat8": "rat8", "rat16": "rat16", "rat32": "rat32", "rat64": "rat64",
 	"map": "map", "dict": "dict",
 	"tup": "tup", "list": "list",
 	"str": "str", "text": "text",
@@ -143,7 +143,7 @@ func Lex(input string) []Node {
 					}
 				}
 			}
-			terms = append(terms, Term("strTextLit", i, tok)) // The str/text literal.
+			terms = append(terms, Term("<textualLit>", i, tok)) // The str/text literal.
 			tok = ""
 		case 1: // First, decide which terminal the token is; then, add the terminal.
 			if tok != "" {

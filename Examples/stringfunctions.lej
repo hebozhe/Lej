@@ -30,7 +30,7 @@ def fun ratToDecString as:
     expect str;
     def int n as r["num"];
     def int d as r["den"];
-    def int q as [n - [n % d]] / d;
+    def int q as {n - {n % d}} / d;
     def int r as n % d;
     def str dec as q as str;
     if r = 0:
@@ -39,9 +39,9 @@ def fun ratToDecString as:
     dec as dec + ".";
     do this until r = 0:
         n as r * 10;
-        q as [n - [n % d]] / d;
+        q as {n - {n % d}} / d;
         r as n % d;
-        dec as dec + [q as str];
+        dec as dec + {q as str};
         \
     give dec;
     \

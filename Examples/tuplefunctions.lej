@@ -3,7 +3,7 @@ def fun multiplyTups as:
     expect tup[int];
     def nat lenA as len[tupA];
     def nat lenB as len[tupB];
-    if not [lenA = lenB]:
+    if not {lenA = lenB}:
         give [];
         \
     def tup[int] result as [];
