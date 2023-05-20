@@ -551,15 +551,11 @@ Maps (`map`) and dictionaries (`dict`) are the read-only and read-writable, one-
 
 Unlike mappings in other languages, mappings in Lej are key-sorted rather than hashed. This is done to _guarantee_ no collisions between key-value pairs, with lookups performed by binary search (O(log n) time, definitely) rather than hashing and index retrieval (O(1) time, maybe).
 
-Mapping types have two reserved keyword strings:
-- "keys" for mapping lookups and
-- "vals" for values aligned with the mapping.
-
 ```
 def str uppercase as "ZYXWVUTSRQPONMLKJIHGFEDCBA";
 def str lowercase as "zyxwvutsrqponmlkjihgfedcba";
-def map[str str] upperLower as ["keys" uppercase, "vals" lowercase];
-def chr capitalE as upperLower["keys"][4];
+def map[str str] upperLower as [uppercase, lowercase];
+def chr lowercaseE as upperLower["E"];
 ```
 
 
