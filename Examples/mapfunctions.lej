@@ -5,7 +5,7 @@ def fun lowercase as this:
     def str uppercase as "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     def str lowercase as "abcdefghijklmnopqrstuvwxyz";
 
-    def map[str str] upperLower as ["keys" uppercase, "vals" lowercase];
+    def map[str str] upperLower as [uppercase lowercase];
 
     `Lowercase s.`
     def str sLowered as "";
@@ -17,7 +17,7 @@ def fun lowercase as this:
             sLowered as sLowered + [c];
             back!
             \
-        sLowered as sLowered + [upperLower[c]];
+        sLowered as sLowered + {upperLower[c] as str};
         i as i + 1;
         \
     give sLowered;

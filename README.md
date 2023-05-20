@@ -554,11 +554,8 @@ Unlike mappings in other languages, mappings in Lej are key-sorted rather than h
 ```
 def str uppercase as "ZYXWVUTSRQPONMLKJIHGFEDCBA";
 def str lowercase as "zyxwvutsrqponmlkjihgfedcba";
-def map[str str] upperLower as [uppercase, lowercase];
-def chr lowercaseE as upperLower["E"];
+def map[str str] upperLower as [uppercase lowercase];
+def chr lowercaseE as upperLower['E'];
 ```
-
-
-
 ---
 [Back to Table of Contents](#documentation)
