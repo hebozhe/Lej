@@ -255,38 +255,38 @@ While all primitive types are immutable, composite types are named separately ac
 All immutable composite types are also frozen, meaning that they cannot be modified after they are created.
 
 ## **Primitive Types**
-| Operator Set                  | Primitive (Generic) Type | Subtypes           | Primitive Values            | Exceptions           |
-|-------------------------------|--------------------------|--------------------|-----------------------------|----------------------|
-| {}                            | Functions (`fun`)        |                    |                             |                      |
-| `fun`                         |                          | Functions (`fun`)  |                             |                      |
-| {`=`}                         | Evaluables (`eval`)      |                    |                             |                      |
-| {`=`, `<`}                    | Comparables (`comp`)     |                    | {`many`}                    |                      |
-| `comp` ∪ {`and`, `or`, `not`} | Brouwerians (`brou`)     |                    |                             |                      |
-| `brou`                        |                          | (`brou`)           | {`true`, `false`, `unsure`} |                      |
-| `comp` ∪ {`+`, `*`, `%`}      | Naturals (`N`)           |                    |                             | `N % 0` is an error. |
-| `N`                           |                          | (`N8`, ..., `N64`) | {0. 1, 2, 3, 4, ...}        |                      |
-| `N`                           |                          | Bytes (`byte`)     |                             |                      |
-| `N` ∪ {`-`}                   | Integers (`Z`)           |                    |                             | `Z % 0` is an error. |
-| `Z`                           |                          | (`Z8`, ..., `Z64`) | {..., -2, -1, 0, 1, 2, ...} |                      |
+| Operator Set                  | Primitive (Generic) Type | Subtypes           | Primitive Values            |
+|-------------------------------|--------------------------|--------------------|-----------------------------|
+| {}                            | Functions (`fun`)        |                    |                             |
+| `fun`                         |                          | Functions (`fun`)  |                             |
+| {`=`}                         | Evaluables (`eval`)      |                    |                             |
+| {`=`, `<`}                    | Comparables (`comp`)     |                    | {`many`}                    |
+| `comp` ∪ {`and`, `or`, `not`} | Brouwerians (`brou`)     |                    |                             |
+| `brou`                        |                          | (`brou`)           | {`true`, `false`, `unsure`} |
+| `comp` ∪ {`+`, `*`, `%`}      | Naturals (`N`)           |                    |                             |
+| `N`                           |                          | (`N8`, ..., `N64`) | {0. 1, 2, 3, 4, ...}        |
+| `N`                           |                          | Bytes (`byte`)     |                             |
+| `N` ∪ {`-`}                   | Integers (`Z`)           |                    |                             |
+| `Z`                           |                          | (`Z8`, ..., `Z64`) | {..., -2, -1, 0, 1, 2, ...} |
 
 ## **Composite Types**
-| Operator Set                                   | Generic Type       | Immutable (and Frozen) Subtype | Mutable Subtype          | Exceptions           |
-|------------------------------------------------|--------------------|--------------------------------|--------------------------|----------------------|
-| `eval` ∪ {`of`}                                | Structures (`sct`) |                                |                          |                      |
-| `sct`                                          |                    | Records (`rec`)                | Data (`data`)            |                      |
-| `sct` ∪ `Z` ∪ {`/`, `.`}                       | Rationals (`Q`)    |                                |                          | `Q / 0` is an error. |
-| `Q`                                            |                    | (`Q8`, ..., `Q64`)             |                          |                      |
-| `rec` ∪ {`at`, `from`, `to`, `&`}              | Iterables (`itr`)  |                                |                          |                      |
-| `itr`∪ {`{...}`}                               |                    | Tuples (`tup`)                 | Lists (`list`)           |                      |
-| `itr` ∪ `comp` ∪ {``` `...` ```}               | Glyphs (`gly`)     |                                |                          |                      |
-| `gly`                                          |                    | Marks (`mrk`)                  | Runes (`rune`)           |                      |
-| `itr` ∪ `comp` ∪ {`'...'`}                     | Graphemes (`gph`)  |                                |                          |                      |
-| `gph`                                          |                    | Characters (`chr`)             | Phemes (`pheme`)         |                      |
-| `itr` ∪ `comp` ∪ {`"..."`}                     | Textuals (`txt`)   |                                |                          |                      |
-| `txt`                                          |                    | Strings (`str`)                | Character Texts (`ctxt`) |                      |
-| `txt`                                          |                    |                                | Pheme Texts (`ptxt`)     |                      |
-| `itr` ∪ {`{<KEY> <VALUE>, ...}`, `where`, `K`} | Lookups (`lkp`)    |                                |                          |                      |
-| `lkp`                                          |                    | Maps (`map`)                   | Dictionaries (`dict`)    |                      |
+| Operator Set                                   | Generic Type       | Immutable (and Frozen) Subtype | Mutable Subtype          |
+|------------------------------------------------|--------------------|--------------------------------|--------------------------|
+| `eval` ∪ {`of`}                                | Structures (`sct`) |                                |                          |
+| `sct`                                          |                    | Records (`rec`)                | Data (`data`)            |
+| `sct` ∪ `Z` ∪ {`/`, `.`}                       | Rationals (`Q`)    |                                |                          |
+| `Q`                                            |                    | (`Q8`, ..., `Q64`)             |                          |
+| `rec` ∪ {`at`, `from`, `to`, `&`}              | Iterables (`itr`)  |                                |                          |
+| `itr`∪ {`{...}`}                               |                    | Tuples (`tup`)                 | Lists (`list`)           |
+| `itr` ∪ `comp` ∪ {``` `...` ```}               | Glyphs (`gly`)     |                                |                          |
+| `gly`                                          |                    | Marks (`mrk`)                  | Runes (`rune`)           |
+| `itr` ∪ `comp` ∪ {`'...'`}                     | Graphemes (`gph`)  |                                |                          |
+| `gph`                                          |                    | Characters (`chr`)             | Phemes (`pheme`)         |
+| `itr` ∪ `comp` ∪ {`"..."`}                     | Textuals (`txt`)   |                                |                          |
+| `txt`                                          |                    | Strings (`str`)                | Character Texts (`ctxt`) |
+| `txt`                                          |                    |                                | Pheme Texts (`ptxt`)     |
+| `itr` ∪ {`{<KEY> <VALUE>, ...}`, `where`, `K`} | Lookups (`lkp`)    |                                |                          |
+| `lkp`                                          |                    | Maps (`map`)                   | Dictionaries (`dict`)    |
 
 ## **Evaluables**
 Because the `=` operator checks for deep value equality, every type in Lej is an evaluable.
