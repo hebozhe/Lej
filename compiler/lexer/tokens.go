@@ -4,165 +4,167 @@
 // and houses the functions to return the respective TokType values after a check.
 package lexer
 
-// TokType represents a lexical token for Lej.
-type TokType string
+// TokTipo represents a lexical token for Lej.
+type TokTipo string
 
 // Constants representing special tokens, comments, whitespace, scope operators, punctuation, variables, function keywords, function call keywords, conditional keywords, do-times loop keywords, built-in meta-function keywords, operators, and type signatures.
 // All tokens being terminal symbols will be represented in ALL CAPS.
 const (
 	// Special tokens:
-	ILL TokType = "ILL" // Illegal token
-	EOF TokType = "EOF" // End of file
+	ILL TokTipo = "ILL" // Illegal token
+	EOF TokTipo = "EOF" // End of file
 
 	// Comments:
-	TILDE TokType = "~" // Comment
+	TILDE TokTipo = "~" // Comment
 
 	// Whitespace:
-	SPACE TokType = " "  // Whitespace
-	NEWLN TokType = "\n" // Newline
-	TAB   TokType = "\t" // Tab
-	CARTN TokType = "\r" // Carriage return
+	SPACE TokTipo = " "  // Whitespace
+	NEWLN TokTipo = "\n" // Newline
+	TAB   TokTipo = "\t" // Tab
+	CARTN TokTipo = "\r" // Carriage return
 
 	// Scope operators:
-	LPAREN TokType = "(" // Left parenthesis (open)
-	RPAREN TokType = ")" // Right parenthesis (close)
+	LPAREN TokTipo = "(" // Left parenthesis (open)
+	RPAREN TokTipo = ")" // Right parenthesis (close)
 
 	// Punctuation:
-	COMMA  TokType = ","  // Comma
-	SEMI   TokType = ";"  // Semicolon
-	COLON  TokType = ":"  // Colon
-	BSLASH TokType = "\\" // Backslash
-	EXCLAM TokType = "!"  // Exclamation mark
+	COMMA  TokTipo = ","  // Comma
+	SEMI   TokTipo = ";"  // Semicolon
+	COLON  TokTipo = ":"  // Colon
+	BSLASH TokTipo = "\\" // Backslash
+	EXCLAM TokTipo = "!"  // Exclamation mark
 
 	// Variables:
-	NAME   TokType = "NAME" // Identifier
-	NONAME TokType = "_"    // Noname
+	NAME   TokTipo = "NAME" // Identifier
+	NONAME TokTipo = "_"    // Noname
 
 	// Assignment Keyword:
-	IS TokType = "is" // Is keyword
+	IS TokTipo = "is" // Is keyword
 
 	// Function Keywords:
-	TAKE TokType = "take" // Function argument
-	WANT TokType = "want" // Function expected return
-	KNOW TokType = "know" // Function local variable type info
-	GIVE TokType = "give" // Function return
+	TAKE TokTipo = "take" // Function argument
+	WANT TokTipo = "want" // Function expected return
+	KNOW TokTipo = "know" // Function local variable type info
+	GIVE TokTipo = "give" // Function return
 
 	// Function Call Keywords:
-	WITH TokType = "with" // Function call argument
-	AS   TokType = "as"   // Parameter call argument
+	WITH TokTipo = "with" // Function call argument
+	AS   TokTipo = "as"   // Parameter call argument
 
 	// Conditional Keywords:
-	IF        TokType = "if"        // If statement
-	ELSE      TokType = "else"      // Else statement
-	OTHERWISE TokType = "otherwise" // Otherwise statement
+	IF        TokTipo = "if"        // If statement
+	ELSE      TokTipo = "else"      // Else statement
+	OTHERWISE TokTipo = "otherwise" // Otherwise statement
 
-	// Do-Times Loop Keywords:
-	DO    TokType = "do"    // Do statement
-	THIS  TokType = "this"  // This keyword, mainly used in function and structure definitions.
-	TIMES TokType = "times" // Times keyword
-	BACK  TokType = "back"  // Back keyword
-	OUT   TokType = "out"   // Out keyword
+	// For-Some-Time Loop Keywords:
+	FOR  TokTipo = "for"  // For statement
+	SOME TokTipo = "some" // Some keyword
+	TIME TokTipo = "time" // Time keyword
+	DO   TokTipo = "do"   // Do statement
+	THIS TokTipo = "this" // This keyword, mainly used in function and structure definitions.
+	BACK TokTipo = "back" // Back keyword
+	OUT  TokTipo = "out"  // Out keyword
 
 	// Built-In Meta-Function Keywords:
-	DIE TokType = "die" // Die function name
+	LIVE TokTipo = "live" // Live function name
+	DIE  TokTipo = "die"  // Die function name
 
 	// Operators:
-	LBRACK TokType = "[" // Subtype delimiter open
-	RBRACK TokType = "]" // Subtype delimiter close
+	LBRACK TokTipo = "[" // Subtype delimiter open
+	RBRACK TokTipo = "]" // Subtype delimiter close
 	// Operators for Evaluables:
-	EQ TokType = "=" // Assignment
+	EQ TokTipo = "=" // Assignment
 	// Operators and Primitives for Brouwerians:
-	AND    TokType = "and"    // Logical conjunction
-	OR     TokType = "or"     // Logical disjunction
-	NOT    TokType = "not"    // Logical negation
-	TRUE   TokType = "true"   // Intuitionistic true
-	FALSE  TokType = "false"  // Intuitionistic false
-	UNSURE TokType = "unsure" // Kleene unsure
+	AND    TokTipo = "and"    // Logical conjunction
+	OR     TokTipo = "or"     // Logical disjunction
+	NOT    TokTipo = "not"    // Logical negation
+	TRUE   TokTipo = "true"   // Intuitionistic true
+	FALSE  TokTipo = "false"  // Intuitionistic false
+	UNSURE TokTipo = "unsure" // Kleene unsure
 	// Operators for Comparables:
-	LT TokType = "<" // Less than
+	LT TokTipo = "<" // Less than
 	// Operators and Primitives for Naturals:
-	PLUS  TokType = "+"    // Addition
-	MINUS TokType = "-"    // Subtraction
-	MULT  TokType = "*"    // Multiplication
-	MOD   TokType = "%"    // Modulus
-	MANY  TokType = "many" // Infinity
+	PLUS  TokTipo = "+"    // Addition
+	MINUS TokTipo = "-"    // Subtraction
+	MULT  TokTipo = "*"    // Multiplication
+	MOD   TokTipo = "%"    // Modulus
+	MANY  TokTipo = "many" // Infinity
 	// Operators for Runes:
-	BTICK TokType = "`" // Rune literal delimiter
+	BTICK TokTipo = "`" // Rune literal delimiter
 	// Operators for Structures:
-	OF TokType = "of" // Structure field access
+	OF TokTipo = "of" // Structure field access
 	// Operators for Rationals:
-	DIV TokType = "/" // Division
-	DEC TokType = "." // Decimal point
+	DIV TokTipo = "/" // Division
+	DEC TokTipo = "." // Decimal point
 	// Operators for Iterables:
-	AT     TokType = "at"   // Iterable element access
-	FROM   TokType = "from" // Iterable range start
-	TO     TokType = "to"   // Iterable range end
-	CONCAT TokType = "&"    // Iterable concatenation
+	AT     TokTipo = "at"   // Iterable element access
+	FROM   TokTipo = "from" // Iterable range start
+	TO     TokTipo = "to"   // Iterable range end
+	CONCAT TokTipo = "&"    // Iterable concatenation
 	// Operators for Tuples and Lists:
-	LBRACE TokType = "{"
-	RBRACE TokType = "}"
+	LBRACE TokTipo = "{"
+	RBRACE TokTipo = "}"
 	// Operators for Graphemes:
-	SQUO TokType = "'" // Character and pheme literal delimiter
+	SQUO TokTipo = "'" // Character and pheme literal delimiter
 	// Operators for Textuals:
-	DQUO TokType = "\"" // String literal delimiter
+	DQUO TokTipo = "\"" // String literal delimiter
 	// Operators for Lookups:
-	K TokType = "K" // Lookup key flag
+	K TokTipo = "K" // Lookup key flag
 
 	// Type Signatures:
-	FUN   TokType = "fun"   // Function signature
-	BROU  TokType = "brou"  // Brouwerian signature
-	COMP  TokType = "comp"  // Comparable signature
-	NAT   TokType = "N"     // Natural number signature
-	NAT8  TokType = "N8"    // 8-bit natural number signature
-	NAT16 TokType = "N16"   // 16-bit natural number signature
-	NAT32 TokType = "N32"   // 32-bit natural number signature
-	NAT64 TokType = "N64"   // 64-bit natural number signature
-	INT   TokType = "Z"     // Integer number signature
-	INT8  TokType = "Z8"    // 8-bit integer number signature
-	INT16 TokType = "Z16"   // 16-bit integer number signature
-	INT32 TokType = "Z32"   // 32-bit integer number signature
-	INT64 TokType = "Z64"   // 64-bit integer number signature
-	BYTE  TokType = "byte"  // Byte signature
-	GLY   TokType = "gly"   // Glyph signature
-	MARK  TokType = "mrk"   // Mark signature
-	RUNE  TokType = "rune"  // Rune signature
-	SCT   TokType = "sct"   // Structure signature
-	RAT   TokType = "Q"     // Rational number signature
-	RAT8  TokType = "Q8"    // 8-bit rational number signature
-	RAT16 TokType = "Q16"   // 16-bit rational number signature
-	RAT32 TokType = "Q32"   // 32-bit rational number signature
-	RAT64 TokType = "Q64"   // 64-bit rational number signature
-	REC   TokType = "rec"   // Record signature
-	DATA  TokType = "data"  // Data signature
-	ITR   TokType = "itr"   // Iterable signature
-	TUP   TokType = "tup"   // Tuple signature
-	LIST  TokType = "list"  // List signature
-	GPH   TokType = "gph"   // Grapheme signature
-	CHR   TokType = "chr"   // Character signature
-	PHEME TokType = "pheme" // Pheme signature
-	STR   TokType = "str"   // String signature
-	TXT   TokType = "txt"   // Text signature
-	CTXT  TokType = "ctxt"  // Character text signature
-	PTXT  TokType = "ptxt"  // Pheme text signature
-	LKP   TokType = "lkp"   // Lookup signature
-	MAP   TokType = "map"   // Map signature
-	DICT  TokType = "dict"  // Dictionary signature
+	FUN   TokTipo = "fun"   // Function signature
+	BROU  TokTipo = "brou"  // Brouwerian signature
+	COMP  TokTipo = "comp"  // Comparable signature
+	NAT   TokTipo = "N"     // Natural number signature
+	NAT8  TokTipo = "nat8"  // 8-bit natural number signature
+	NAT16 TokTipo = "nat16" // 16-bit natural number signature
+	NAT32 TokTipo = "nat32" // 32-bit natural number signature
+	NAT64 TokTipo = "nat64" // 64-bit natural number signature
+	INT   TokTipo = "Z"     // Integer number signature
+	INT8  TokTipo = "int8"  // 8-bit integer number signature
+	INT16 TokTipo = "int16" // 16-bit integer number signature
+	INT32 TokTipo = "int32" // 32-bit integer number signature
+	INT64 TokTipo = "int64" // 64-bit integer number signature
+	BYTE  TokTipo = "byte"  // Byte signature
+	GLY   TokTipo = "gly"   // Glyph signature
+	MARK  TokTipo = "mrk"   // Mark signature
+	RUNE  TokTipo = "rune"  // Rune signature
+	SCT   TokTipo = "sct"   // Structure signature
+	RAT   TokTipo = "Q"     // Rational number signature
+	RAT8  TokTipo = "rat8"  // 8-bit rational number signature
+	RAT16 TokTipo = "rat16" // 16-bit rational number signature
+	RAT32 TokTipo = "rat32" // 32-bit rational number signature
+	RAT64 TokTipo = "rat64" // 64-bit rational number signature
+	REC   TokTipo = "rec"   // Record signature
+	DATA  TokTipo = "data"  // Data signature
+	ITR   TokTipo = "itr"   // Iterable signature
+	TUP   TokTipo = "tup"   // Tuple signature
+	LIST  TokTipo = "list"  // List signature
+	GPH   TokTipo = "gph"   // Grapheme signature
+	CHR   TokTipo = "chr"   // Character signature
+	PHEME TokTipo = "pheme" // Pheme signature
+	TXT   TokTipo = "txt"   // Textual signature
+	STR   TokTipo = "str"   // String signature
+	TEXT  TokTipo = "text"  // Text signature
+	LKP   TokTipo = "lkp"   // Lookup signature
+	MAP   TokTipo = "map"   // Map signature
+	DICT  TokTipo = "dict"  // Dictionary signature
 
-	// Import Keyword:
-	USE TokType = "use" // Use keyword
+	// Type Aliasing:
+	SEE TokTipo = "see" // Type aliasing
 
 	// Non-Predefined Literals:
 	// NAME handles the NAMELIT token type
-	CMNTLIT TokType = "CMNTLIT" // Comment literal
-	DIGLIT  TokType = "DIGLIT"  // Digit literal
-	RUNELIT TokType = "RUNELIT" // Rune literal
-	GPHLIT  TokType = "GPHLIT"  // Grapheme literal
-	TXTLIT  TokType = "TXTLIT"  // Textual literal
+	CMNTLIT TokTipo = "CMNTLIT" // Comment literal
+	DIGLIT  TokTipo = "DIGLIT"  // Digit literal
+	RUNELIT TokTipo = "RUNELIT" // Rune literal
+	GPHLIT  TokTipo = "GPHLIT"  // Grapheme literal
+	TXTLIT  TokTipo = "TXTLIT"  // Textual literal
 )
 
 // Tok represents a token with its type, literal value, position, and line number.
 type Tok struct {
-	Tipo TokType
+	Tipo TokTipo
 	Lit  string
 	Ini  uint
 	Fin  uint
@@ -170,24 +172,24 @@ type Tok struct {
 }
 
 type TTFeed struct {
-	tipo TokType
+	tipo TokTipo
 	enc  bool // Whether the token was found (encontrado).
 }
 
 // nuTTFeed creates a new TTFeed struct with the given type and encoding.
-func nuTTFeed(tipo TokType, enc bool) TTFeed {
+func nuTTFeed(tipo TokTipo, enc bool) TTFeed {
 	return TTFeed{tipo, enc}
 }
 
 // nuTok creates a new token with the given type, literal value, position, and line number.
-func nuTok(tipo TokType, lit string, ini uint, fin uint, lin uint) Tok {
+func nuTok(tipo TokTipo, lit string, ini uint, fin uint, lin uint) Tok {
 	return Tok{tipo, lit, ini, fin, lin}
 }
 
 // esEspacio checks if the given character is a whitespace character.
 func esEspacio(b byte) bool {
 	// Know...
-	var cTok TokType = TokType(b)
+	var cTok TokTipo = TokTipo(b)
 	return cTok == SPACE || cTok == NEWLN || cTok == TAB || cTok == CARTN
 }
 
@@ -238,7 +240,7 @@ func esNAMETok(bs []byte) bool {
 // or ILL if the given byte is not a mono-byte symbolic token.
 func quePalabraMonobitoSimbolicaEs(b byte) TTFeed {
 	// Know...
-	var cTok TokType = TokType(b)
+	var cTok TokTipo = TokTipo(b)
 	switch cTok {
 	// Punctuations for Various Uses:
 	case TILDE:
@@ -306,7 +308,7 @@ func quePalabraMonobitoSimbolicaEs(b byte) TTFeed {
 // or ILL if the given byte is not a reserved word.
 func quePalabraReservadaAlfanumericaEs(bs []byte) TTFeed {
 	// Know...
-	var sTok TokType = TokType(bs)
+	var sTok TokTipo = TokTipo(bs)
 	switch sTok {
 	// Assignment Keyword:
 	case IS:
@@ -332,18 +334,24 @@ func quePalabraReservadaAlfanumericaEs(bs []byte) TTFeed {
 		return nuTTFeed(ELSE, true)
 	case OTHERWISE:
 		return nuTTFeed(OTHERWISE, true)
-	// Do-Times Loop Keywords:
+	// For-Some-Time Loop Keywords:
+	case FOR:
+		return nuTTFeed(FOR, true)
+	case SOME:
+		return nuTTFeed(SOME, true)
+	case TIME:
+		return nuTTFeed(TIME, true)
 	case DO:
 		return nuTTFeed(DO, true)
 	case THIS:
 		return nuTTFeed(THIS, true)
-	case TIMES:
-		return nuTTFeed(TIMES, true)
 	case BACK:
 		return nuTTFeed(BACK, true)
 	case OUT:
 		return nuTTFeed(OUT, true)
 	// Built-In Meta-Function Keywords:
+	case LIVE:
+		return nuTTFeed(LIVE, true)
 	case DIE:
 		return nuTTFeed(DIE, true)
 	// Operators and Primitives for Brouwerians:
@@ -432,23 +440,21 @@ func quePalabraReservadaAlfanumericaEs(bs []byte) TTFeed {
 		return nuTTFeed(CHR, true)
 	case PHEME:
 		return nuTTFeed(PHEME, true)
-	case STR:
-		return nuTTFeed(STR, true)
 	case TXT:
 		return nuTTFeed(TXT, true)
-	case CTXT:
-		return nuTTFeed(CTXT, true)
-	case PTXT:
-		return nuTTFeed(PTXT, true)
+	case STR:
+		return nuTTFeed(STR, true)
+	case TEXT:
+		return nuTTFeed(TEXT, true)
 	case LKP:
 		return nuTTFeed(LKP, true)
 	case MAP:
 		return nuTTFeed(MAP, true)
 	case DICT:
 		return nuTTFeed(DICT, true)
-	// Import Keyword:
-	case USE:
-		return nuTTFeed(USE, true)
+	// Type Aliasing:
+	case SEE:
+		return nuTTFeed(SEE, true)
 	// Miscellaneous alphabetic constants and keywords:
 	case MANY:
 		return nuTTFeed(MANY, true)

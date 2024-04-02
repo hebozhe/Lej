@@ -7,7 +7,7 @@ Lej (pronounced as "ledge") is a statically typed, compiled programming language
 - **Simple and intuitive syntax.** The syntax is designed to be easy to read and write for beginners and seasoned programmers alike. A single symbol does a single thing, for a single type.
 - **Mandated functional purity.** Every function **_must_** return a value, no exceptions.
 - **No undefined or null types.** Lej does not have a type for `None`, `nil`, `null`, `nix`, or any other empty value. `undefined` is an error, not a type.
-- **Guaranteed precision.** There is no `float` type in Lej.
+- **Guaranteed precision.** There is no `float` type in Lej. Types are closed under their permitted operations, so there is no loss of precision in arithmetic operations.
 
 # **Syntax**
 The syntax of Lej is designed to be simple and intuitive. It is inspired by [the semantic primes of Natural Semantic Metalanguage](https://intranet.secure.griffith.edu.au/schools-departments/natural-semantic-metalanguage/what-is-nsm/semantic-primes), as well as the programming languages Ada, Dart, Delphi (Object Pascal), Go, Haskell, and Swift.
@@ -27,10 +27,10 @@ Whitespaces and newlines can separate tokens and statements.
 Newlines to separate expressions or statements are not required, but can help make code more readable. Lej can be completely minified.
 
 ## **Statements**
-Statements end with a semicolon `;`.
+Statements end with a semicolon `;`. In specific circumstances, some end with an exclamation mark `!`.
 
 ## **Parentheses**
-Parentheses `()` are only used to disambiguate operational scope. All syntactic ambiguity must be resolved with parentheses.
+Parentheses `()` are only used to disambiguate scope. All syntactic ambiguity must be resolved with parentheses.
 
 ```
 int a is 5 * (3 + 2); ~a is 25.~
@@ -47,7 +47,7 @@ The only special name is `_`, which is used to assign a variable that is never r
 
 ## **Variables**
 Lej assigns variables via the statement format `<TYPE> <NAME> is <VALUE>;`
-The variable type must be declared the first time it is used and it must never be declared again. (e.g., `Z a is 5; a is a + 1;`)
+The variable type must be declared the first time it is used and it must never be declared again. (e.g., `int16 a is 5; a is a + 1;`)
 
 ## **Control Structures**
 There are three control structures in Lej: conditionals, functions, and do-times loops.
@@ -130,124 +130,6 @@ fun isPalindrome is this:
 \
 ```
 
-```
-from http use fun httpGet;
-from time use fun sleep, N64 timeSec;
-
-fun wasHTTPGetSuccessful is this:
-    take str url, N64 secsDelay, N64 retries;
-    want brou;
-    know brou succ;
-
-    succ is httpGet with url as url;
-
-    do this retries times:
-        if succ:
-            give true;
-        \
-        else: 
-            give false;
-        \
-        otherwise:
-            _ is sleep with secsDelay * timeSec as ns;
-        \
-    \
-    give succ;
-\
-```
-
-## **Do-Times Loops**
-Do-times loops are defined via the format `do this <NAT> times: ... \`.
-
-The keywords `back!` and `out!` are used to control the flow of the loop. `back!` is used to continue the loop, while `out!` is used to exit the loop.
-
-```
-fun findMinAndMax is this:
-    take itr[N] nums;
-    want tup[N];
-    know N64 min, N64 max, N64 i;
-
-    if (len of l) = 0: die with "The list is empty." as err, 1 as code; \
-
-    min is nums at 0;
-    max is nums at 0;
-    i is 0;
-    do this (len of nums) - 1 times:
-        i is i + 1;
-        if (nums at i) < min: min is (nums at i); back!; \
-        if max < (nums at i): max is (nums at i); \
-    \
-
-    give {min, max};
-\
-
-fun isAinBOrdered is this:
-    take itr[comp] a, itr[comp] b;
-    want brou;
-    know N64 i;
-
-    if (len of a) = 0: give true; \
-    if (len of b) = 0: give false; \
-
-    a0 is a at 0;
-    i is 0;
-    do this (len of b) times:
-        if a0 = (b at i): 
-            a is a from 1 to (len of a);
-            b is b from (i + 1) to (len of b);
-            give (isAinBOrdered with a as a, b as b);
-        \
-        i is i + 1;
-    \
-
-    give false;
-\
-```
-
-If the chosen `N` is `0`, the loop block will not be entered.
-If the chosen `N` is `many`, the loop will execute indefinitely (equivalent to `while true` in other languages).
-
-## **Error Handling**
-Errors are thrown via the built-in meta-function `die`. This function is a meta-function because it does not return a value, but instead throws an error and exits the program.
-
-### **`die` Function Parameters**
-- `str` message: The error message.
-- `N` code: The error code.
-
-### **Example Error Handling**
-```
-fun divMod is this:
-    take N a, N b;
-    want tup[N];
-    know N64 q, N64 r;
-
-    if b = 0: die with "Division by zero is undefined." as err, 1 as code; \
-
-    ~Division is not allowed with naturals, 
-    so we'll use multiplication to find the quotient.~
-
-    q is 0;
-    r is a;
-    do this a times:
-        if r < b: out!; \
-
-        q is q + 1;
-        r is r - b;
-    \
-
-    give {q, r};
-\
-```
-
-## **Imports**
-Lej uses the `from` and `use` keywords to import functions from other modules. The `from` keyword is used to specify the module, while the `use` keyword is used to specify the function. Import statements are expressed via `from <MODULE> use <TYPE-OF-X> <NAME-OF_X>, <TYPE-OF-Y> <NAME-OF-Y>, ...;`.
-
-### **Example Imports**
-```
-from http use fun httpGet;
-from time use fun sleep, N64 timeSec;
-```
-
 # **Semantics**
 The semantics of Lej is a primitives-to-composites type system, with types defined as the set of built-in operations that can be performed on them.
 
@@ -255,19 +137,19 @@ While all primitive types are immutable, composite types are named separately ac
 All immutable composite types are also frozen, meaning that they cannot be modified after they are created.
 
 ## **Primitive Types**
-| Operator Set                  | Primitive (Generic) Type | Subtypes           | Primitive Values            |
-|-------------------------------|--------------------------|--------------------|-----------------------------|
-| {}                            | Functions (`fun`)        |                    |                             |
-| `fun`                         |                          | Functions (`fun`)  |                             |
-| {`=`}                         | Evaluables (`eval`)      |                    |                             |
-| {`=`, `<`}                    | Comparables (`comp`)     |                    | {`many`}                    |
-| `comp` ∪ {`and`, `or`, `not`} | Brouwerians (`brou`)     |                    |                             |
-| `brou`                        |                          | (`brou`)           | {`true`, `false`, `unsure`} |
-| `comp` ∪ {`+`, `*`, `%`}      | Naturals (`N`)           |                    |                             |
-| `N`                           |                          | (`N8`, ..., `N64`) | {0. 1, 2, 3, 4, ...}        |
-| `N`                           |                          | Bytes (`byte`)     |                             |
-| `N` ∪ {`-`}                   | Integers (`Z`)           |                    |                             |
-| `Z`                           |                          | (`Z8`, ..., `Z64`) | {..., -2, -1, 0, 1, 2, ...} |
+| Operator Set                  | Primitive (Generic) Type | Subtypes               | Primitive Values            |
+|-------------------------------|--------------------------|------------------------|-----------------------------|
+| {}                            | Functions (`fun`)        |                        |                             |
+| `fun`                         |                          | Functions (`fun`)      |                             |
+| {`=`}                         | Evaluables (`eval`)      |                        |                             |
+| `eval` ∪ {`and`, `or`, `not`} | Brouwerians (`brou`)     |                        |                             |
+| `brou`                        |                          | (`brou`)               | {`true`, `false`, `unsure`} |
+| {`=`, `<`}                    | Comparables (`comp`)     |                        | {`many`}                    |
+| `comp` ∪ {`+`, `*`, `%`}      | Naturals (`N`)           |                        |                             |
+| `N`                           |                          | (`nat8`, ..., `nat64`) | {0. 1, 2, 3, 4, ...}        |
+| `N`                           |                          | Bytes (`byte`)         |                             |
+| `N` ∪ {`-`}                   | Integers (`Z`)           |                        |                             |
+| `Z`                           |                          | (`int8`, ..., `int64`) | {..., -2, -1, 0, 1, 2, ...} |
 
 ## **Composite Types**
 | Operator Set                                   | Generic Type       | Immutable (and Frozen) Subtype | Mutable Subtype          |
@@ -275,7 +157,7 @@ All immutable composite types are also frozen, meaning that they cannot be modif
 | `eval` ∪ {`of`}                                | Structures (`sct`) |                                |                          |
 | `sct`                                          |                    | Records (`rec`)                | Data (`data`)            |
 | `sct` ∪ `Z` ∪ {`/`, `.`}                       | Rationals (`Q`)    |                                |                          |
-| `Q`                                            |                    | (`Q8`, ..., `Q64`)             |                          |
+| `Q`                                            |                    | (`rat8`, ..., `rat64`)         |                          |
 | `rec` ∪ {`at`, `from`, `to`, `&`}              | Iterables (`itr`)  |                                |                          |
 | `itr`∪ {`{...}`}                               |                    | Tuples (`tup`)                 | Lists (`list`)           |
 | `itr` ∪ `comp` ∪ {``` `...` ```}               | Glyphs (`gly`)     |                                |                          |
@@ -292,7 +174,7 @@ All immutable composite types are also frozen, meaning that they cannot be modif
 Because the `=` operator checks for deep value equality, every type in Lej is an evaluable.
 The rules governing the behavior of the `=` operator vary slightly by type, but it performs a deep value comparison for all types.
 
-The level of evaluation will is the lowest common supertype of the two compared types. For example, comparing a `N` and an `Z` will result in a `comp`-type comparison. If the lowest common supertype is `eval`, the evaluation is always `false`.
+The level of evaluation will is the lowest common supertype of the two compared types. For example, comparing `N` and `Z` values will result in a `N`-type comparison. If the lowest common supertype is `eval`, the evaluation is always `false`.
 
 This obeys the [bundle theory of identity](https://en.wikipedia.org/wiki/Bundle_theory).
 
@@ -330,8 +212,8 @@ Their operator behaviors for naturals and integers are widely known, so they wil
 However, there is _no overflow or underflow_ in Lej. If a natural or integer exceeds its maximum value or goes below its minimum value, it throws an error.
 
 ## **Bytes**
-Bytes are an alias of `N8`, though their primary purpose in Lej's ontology is to construct glyphs.
-Lej enforces this naming convention to separate arithmetic operations on `N8` from the construction of glyphs.
+Bytes are an alias of `nat8`, though their primary purpose in Lej's ontology is to construct glyphs.
+Lej enforces this naming convention to separate arithmetic operations on `nat8` from the construction of glyphs.
 
 ## **Structures**
 Structures are evaluables that can also be accessed by their fields.
@@ -369,9 +251,9 @@ Rationals are comparables that can also be divided and allow for decimal notatio
 Decomposed, rationals are specialized `rec[int8, NX, NX]`, where `X` is the numeral in `ratX`, where the `X` is one of the available bit-widths for rationals.
 
 ### **Rational Fields***
-- `pos` is a `Z8` representing the sign. It houses one of only three values: `1` for positive, `0` for zero, and `-1` for negative.
-- `num` is an `NX` representing the numerator.
-- `den` is an `NX` representing the denominator.
+- `pos` is a `int8` representing the sign. It houses one of only three values: `1` for positive, `0` for zero, and `-1` for negative.
+- `num` is an `natX` representing the numerator.
+- `den` is an `natX` representing the denominator.
 
 All rationals auto-simplify. Ergo `rat a is 50/100;` is equivalent to `rat a is 1/2;`.
 
@@ -400,7 +282,7 @@ Iterables are numerically indexable, sliceable, and concatenatable collections o
 Decomposed, iterables are specialized `rec[nat, arr[T]]`, where `T` is the type of the elements in the iterable, which is defined by its type signature `iter[T]`.
 
 ### **Iterable Fields**
-- `len` is an `N64` representing the length of the iterable.
+- `len` is an `nat64` representing the length of the iterable.
 - `arr` is an array of type `T` representing the elements of the iterable.
     - Arrays cannot be directly called or modified. They can only be accessed via their legal operators.
 
@@ -412,7 +294,7 @@ Where `a` and `b` are both iterables, the following rules apply:
     - If the `len` and `arr` fields of `a` and `b` are equal, the result is `true`.
     - Otherwise, it's false.
 - `a at n`:
-    - Where `n` is a `N64`, the result is the `n`th element of `a`.
+    - Where `n` is a `nat64`, the result is the `n`th element of `a`.
     - If `n` is greater than or equal to the length of `a`, the program throws an error.
 - `a from n to m`:
     - The result is a new iterable that contains the elements of `a` from the `n`th to the `m`th element.
@@ -437,7 +319,7 @@ Decomposed, glyphs are `rec[tup[byte], nat32, utf8]` where the first element is 
 
 ### **Glyph Fields**
 - `bytes` is a `itr[byte]` representing the byte sequence of the Unicode code point.
-- `code` is a `N32` representing the Unicode code point.
+- `code` is a `nat32` representing the Unicode code point.
 - `utf8` is a `utf8` representing the UTF-8 encoding of the Unicode code point.
 
 ### **Glyph Operator Behavior**
@@ -520,7 +402,7 @@ Where `a` and `b` are both lookups, the following rules apply:
     - If the `keys` and `values` fields of `a` and `b` are equal, the result is `true`.
     - Otherwise, it's false.
 - `a where k`:
-    - The result is the `N64` index where `k` is found in `keys of a`.
+    - The result is the `nat64` index where `k` is found in `keys of a`.
     - If `k` is not found in `keys of a`, the result is `len of (keys of a)`.
 - `a at (K k)`:
     - When retrieving a value from a lookup:

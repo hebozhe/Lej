@@ -1,0 +1,94 @@
+~This module houses all of the functions that work with all comparables in Lej.~
+
+~Give the maximum value of an iterable of comparables.~
+fun max is this:
+    take itr[comp] cs;
+    want comp;
+    know brou lt;
+
+    if (len of cs) = 0:
+        die with "max Error: An empty iterable was given." as message, 1 as code;
+    \
+
+    if (len of cs) = 1:
+        give (cs at 0);
+    \
+
+    lt is (cs at 0) < (cs at 1);
+
+    if (len of cs) = 2:
+
+        if lt: give (cs at 1); \
+
+        give (cs at 0);
+    \
+
+    if lt:
+        give (max with (cs from 1 to (len of cs)) as cs);
+    \
+
+    give max with ((cs from 0 to 1) & (cs from 2 to (len of cs))) as cs;
+\
+
+~Give the minimum value of an iterable of comparables.~
+fun min is this:
+    take itr[comp] cs;
+    want comp;
+    know brou lt;
+
+    if (len of cs) = 0:
+        die with "min Error: An empty iterable was given." as message, 1 as code;
+    \
+
+    if (len of cs) = 1:
+        give (cs at 0);
+    \
+
+    lt is (cs at 0) < (cs at 1);
+
+    if (len of cs) = 2:
+
+        if lt: give (cs at 0); \
+
+        give (cs at 1);
+    \
+
+    if lt:
+        give (min with (cs from 0 to 1) as cs);
+    \
+
+    give min with ((cs from 1 to (len of cs)) & (cs from 0 to 1)) as cs;
+\
+
+~Give the ascending-order sort of an iterable of comparables.~
+fun sort is this:
+    take itr[comp] cs;
+    want itr[comp];
+    know comp pivot, itr[comp] left, itr[comp] right, nat64 i;
+
+    ~Use the quicksort algorithm.~
+
+    if (len of cs) < 2:
+        give cs;
+
+    pivot is (cs at 0);
+    left is {};
+    right is {};
+    i is 0;
+
+    do this many times:
+        i is i + 1;
+
+        if i = (len of cs):
+            out!
+        \
+
+        if (cs at i) < pivot:
+            left is (left & (cs at i));
+        \
+        else:
+            right is (right & (cs at i));
+        \
+    
+    give (sort with left as cs) & {pivot} & (sort with right as cs);
+\

@@ -1,263 +1,33 @@
-~This module houses all of the functions that are used to perform common mathematical operations.~
+~This module houses all of the functions that are used to perform common mathematical operations in Lej.~
 
-~Give the maximum of the rational numbers in an iterable.~
-fun max is this:
-    take itr[Q] as qs;
-    want Q64;
-
-    if (len of qs) = 0:
-        die with "maximum Error: An empty iterable has no maximum value." as message, 1 as code;
-    \
-
-    if (len of qs) = 1: give qs at 0; \
-
-    if (len of qs) = 2:
-        if (qs at 0) < (qs at 1): give qs at 1; \
-        give qs at 0; \
-
-    ~The iterable contains more than two elements.~
-    if ((qs at 0) < (qs at 1)) or ((qs at 0) = (qs at 1)):
-        give max with (qs from 1 to (len of qs)) as qs;
-    \
-
-    give max with (qs from 0 to 1) & (qs from 2 to (len of qs)) as qs;
-\
-
-~Give the minimum of the rational numbers in an iterable.~
-fun min is this:
-    take itr[Q] as qs;
-    want Q64;
-
-    if (len of qs) = 0:
-        die with "minimum Error: An empty iterable has no minimum value." as message, 1 as code;
-    \
-
-    if (len of qs) = 1: give qs at 0; \
-
-    if (len of qs) = 2:
-        if (qs at 0) < (qs at 1): give qs at 0; \
-        give qs at 1; \
-
-    ~The iterable contains more than two elements.~
-    if ((qs at 1) < (qs at 0)) or ((qs at 1) = (qs at 0)):
-        give min with (qs from 1 to (len of qs)) as qs;
-    \
-
-    give min with (qs from 0 to 1) & (qs from 2 to (len of qs)) as qs;
-\
-
-~Give the sum of all the rational numbers in an iterable.~
+~Give the sum of all the N-operable numbers in an iterable.~
 fun sum is this:
-    take itr[Q] as qs;
-    want Q64;
+    take itr[N] ns;
+    want nat;
 
-    if (len of qs) = 0: give 0; \
+    if (len of ns) = 0: give 0; \
 
-    give (qs at 0) + (sum with (qs from 1 to (len of qs)) as qs);
+    give (ns at 0) + (sum with (ns from 1 to (len of ns)) as ns);
 \
 
-~Give the product of all the rational numbers in an iterable.~
+~Give the product of all the N-operable numbers in an iterable.~
 fun product is this:
-    take itr[Q] as qs;
-    want Q64;
+    take itr[N] ns;
+    want nat;
 
-    if (len of qs) = 0: give 1; \
+    if (len of ns) = 0: give 1; \
 
-    give (qs at 0) * (product with (qs from 1 to (len of qs)) as qs);
+    give (ns at 0) * (product with (ns from 1 to (len of ns)) as ns);
 \
 
-~Give the factorial of a rational number.~
-fun factorial is this:
-    take Q as q;
-    want Q64;
+~Give the result of a Q-operable number to an integer exponent.~
+fun power is this:
+    take Q base, int64 exp;
+    want Q;
 
-    if q = 0: give 1; \
-
-    give q * (factorial with (q - 1) as q);
-\
-
-~Give the long division and modulus result of two integers.~
-fun divMod is this:
-    take Z as num, Z as den;
-    want tup[Z64, Z64];
-    know Z64 quo, Z64 rem;
-
-    if den = 0:
-        die with "divMod Error: Division by zero is not allowed." as message, 1 as code;
-    \
-
-    if num = 0: give {0, 0}; \
-
-    if num < 0:
-        give -1 * divMod with (num * -1) as num, den as den;
-    if den < 0:
-        give -1 * divMod with num as num, (den * -1) as den;
-
-    quo is 0;
-    rem is num;
-    do this many times:
-        if rem < den: give {quo, rem}; \
-
-        rem is rem - den;
-        quo is quo + 1;
-        \
-    
-    give {quo, rem};
-\
-
-~Give the unique factorization of a natural number.~
-fun factorize is this:
-    take N as n;
-    want tup[N64];
-    know N64 i, tup[N64] dm;
-
-    if n = 1: give {1}; \
-
-    i is 1;
-    do this many times:
-        i is i + 1;
-        dm is divMod with n as num, i as den;
-        if (dm at 1) = 0:
-            give {i} & (factorize with (dm at 0) as n);
-        
-        ~The square root of n has been reached.~
-        if n < (i * i): out! \
-    \
-
-    ~Give the prime factors last.~
-    give {1, n};
-\   
-
-~Give the greatest common divisor of two integers.~
-fun gcd is this:
-    take Z as a, Z as b;
-    want Z64;
-
-    if b = 0: give a; \
-
-    give gcd with b as a, (a % b) as b;
-\
-
-~Give the least common multiple of two integers.~
-fun lcm is this:
-    take Z as a, Z as b;
-    want Z64;
-
-    if (a = 0) or (b = 0): give 0; \
-
-    give (a * b) / (gcd with a as a, b as b);
-\
-
-~Give the value of a rational number raised to an integer power.~
-fun pow is this:
-    take Q as base, Z as exp;
-    want Q64;
-    know N64 a, N64 b;
-
-    ~a and b are the numerator and denominator of the base.~
-    a is (num of base);
-    b is (den of base);
+    if exp < 0: give 1 / (power with base as base and (exp * -1) as exp);
 
     if exp = 0: give 1; \
 
-    if exp < 0:
-        give pow with (b / a) as base, (exp * -1) as exp;
-
-    give base * (pow with base as base, (exp - 1) as exp);
-\
-
-~Give the tally of the factors of an integer.~
-fun tallyZFactors is this:
-    take Z as z;
-    want map[Z64, N64];
-    know dict[Z64, N64] tally, tup[Z64] factors, N64 i, N64 dex;
-
-    factors is factorize with z as z;
-    tally is {};
-    i is 0;
-
-    do this (len of factors) times:
-        dex is tally where (factors at i);
-        if dex = (len of tally):
-            tally at (K (factors at i)) is 1;
-        else:
-            tally at (K (factors at i)) is (tally at (K (factors at i))) + 1;
-        \
-        i is i + 1;
-    \
-
-    give map with (keys of tally) as keys, (values of tally) as values;
-\
-
-~Give the rational root and irrational remainder of a rational number raised to a rational power.~
-fun rootRem is this:
-    take Q as base, Q as exp;
-    want tup[Q64, Q64];
-    know N64 a, N64 b, map[Z64, N64] aTally, map[Z64, N64] bTally, N64 aRoot, N64 bRoot, Z64 remNum, Z64 remDen N64 i;
-
-    ~a and b are the numerator and denominator of the base.~
-    a is (num of base);
-    b is (den of base);
-
-    if exp = 0: give {1, 0}; \
-
-    if exp < 0:
-        give rootRem with (b / a) as base, (exp * -1) as exp;
-
-    ~With base (a/b) and exp (m/n), convert a and b to the mth power.~
-    a is pow with a as a, (num of exp) as b;
-    b is pow with b as a, (num of exp) as b;
-
-    ~Reduce the exponent to its simplest form.~
-    exp is 1 / (den of exp);
-
-    ~At this point, (a/b)^(m/n) = ((a^m)/(b^m))^(1/n).~
-    
-    if exp = 1:
-        ~The value is a perfect root.~
-        give {a/b, 0};
-    \
-
-    ~
-    The value is not a perfect root.
-    ~
-    aTally is tallyZFactors with a as a;
-    bTally is tallyZFactors with b as b;
-
-    aRoot is 1;
-    remNum is 1;
-    i is 0;
-    do this (len of (keys of aTally)) times:
-
-        do this many times:
-            
-            if ((values of aTally) at i) < (den of exp):
-                remNum is remNum * ((keys of aTally) at i) * ((values of aTally) at i);
-                out!
-            \
-
-            aRoot is aRoot * ((keys of aTally) at i);
-            ((values of aTally) at i) is ((values of aTally) at i) - (den of exp);
-        \
-        i is i + 1;
-    \
-
-    bRoot is 1;
-    remDen is 1;
-    i is 0;
-    do this (len of (keys of bTally)) times:
-
-        do this many times:
-            
-            if ((values of bTally) at i) < (den of exp):
-                remDen is remDen * ((keys of bTally) at i) * ((values of bTally) at i);
-                out!
-            \
-
-            bRoot is bRoot * ((keys of bTally) at i);
-            ((values of bTally) at i) is ((values of bTally) at i) - (den of exp);
-        \
-        i is i + 1;
-    
-    give {aRoot / bRoot, remNum / remDen};
+    give base * (power with base as base and (exp - 1) as exp);
 \

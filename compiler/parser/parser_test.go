@@ -1,8 +1,7 @@
-// This module contains the tests for the lexer package.
-package lexer_test
+package parser_test
 
 import (
-	"GoCompiler/lexer"
+	"GoCompiler/parser"
 	"fmt"
 	"io/fs"
 	"os"
@@ -11,10 +10,9 @@ import (
 	"testing"
 )
 
-// TestBuscaProximoToken attempts to lex the input file and returns the tokens.
-func TestBuscaProximoToken(t *testing.T) {
+func TestEmpujaNodosBases(t *testing.T) {
 	// Know...
-	var tkzd lexer.Tokenizador
+	var anal parser.Analizador
 	var dir string
 	var err error
 
@@ -25,20 +23,16 @@ func TestBuscaProximoToken(t *testing.T) {
 	}
 	dir = strings.Join(strings.Split(dir, "/")[:len(strings.Split(dir, "/"))-2], "/")
 
-	// Walk the examples directory and lex each file.
+	// Walk the examples directory and parse each file.
 	filepath.WalkDir(dir+"/examples", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			t.Fatal(err)
 		}
 		if filepath.Ext(path) == ".lej" {
-			tkzd = lexer.InicTokenizador(path)
-			for {
-				tkzd = lexer.BuscaProximoToken(tkzd)
-				fmt.Println(tkzd.Tok)
-				if tkzd.Tok.Tipo == lexer.EOF {
-					break
-				}
-			}
+			anal = parser.InicAnalizador(path)
+			anal = parser.EmpujaNodosBases(anal)
+			fmt.Println(anal.Tokenizador.Path)
+			fmt.Println(parser.HazStringDeNodos(anal.Nodos))
 		}
 		return nil
 	})

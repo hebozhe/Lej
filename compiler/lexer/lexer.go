@@ -51,16 +51,16 @@ func InicTokenizador(path string) Tokenizador {
 	return Tokenizador{Path: path, Ini: 0, Fin: 1, Lin: 1, Tok: tok, Bitos: bitos, Blen: uint(len(bitos))}
 }
 
-func colocaHastaCerrar(t Tokenizador, cerSim TokType) Tokenizador {
+func colocaHastaCerrar(t Tokenizador, cerSim TokTipo) Tokenizador {
 	for {
 		if t.Fin == t.Blen {
 			ErrStringIlegal(t.Path, string(t.Bitos[t.Ini:t.Fin]), t.Lin)
 		}
-		if TokType(t.Bitos[t.Fin]) == NEWLN {
+		if TokTipo(t.Bitos[t.Fin]) == NEWLN {
 			t.Lin = t.Lin + 1
 			continue
 		}
-		if TokType(t.Bitos[t.Fin]) == cerSim && TokType(t.Bitos[t.Fin-1]) != BSLASH {
+		if TokTipo(t.Bitos[t.Fin]) == cerSim && TokTipo(t.Bitos[t.Fin-1]) != BSLASH {
 			t.Fin = t.Fin + 1
 			return t
 		}
@@ -81,7 +81,7 @@ func BuscaProximoToken(t Tokenizador) Tokenizador {
 
 	// If the inititial byte is a space, skip it.
 	if esEspacio(t.Bitos[t.Ini]) {
-		if TokType(t.Bitos[t.Ini]) == NEWLN {
+		if TokTipo(t.Bitos[t.Ini]) == NEWLN {
 			t.Lin = t.Lin + 1
 		}
 		t.Ini = t.Fin

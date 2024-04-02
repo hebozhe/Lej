@@ -2,10 +2,15 @@
 package parser
 
 type Regla struct {
-	Padre     NodeType
-	Hijos     []NodeType
+	Padre     NodoTipo
+	Hijos     []NodoTipo
 	Guardados []uint8
 }
 
-// The gramatica for the Lej parser follows BNF-like syntax.
-var gramatica = []Regla{}
+func nuRegla(padre NodoTipo, hijos []NodoTipo, guardados []uint8) Regla {
+	return Regla{
+		Padre:     padre,
+		Hijos:     hijos,
+		Guardados: guardados,
+	}
+}
