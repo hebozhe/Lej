@@ -160,7 +160,10 @@ fun live is this:
     x is 5;
     y is 10;
 
-    give (x + y);
+    if x < y:
+        give 1;
+
+    give 0;
 \
 ```
 
